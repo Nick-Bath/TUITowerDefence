@@ -45,7 +45,7 @@ def main(window: curses.window):
 				enemies_spawned = 0
 				if Wave.wave_calc(waves_encountered) == 0 or player.hp <= 0:
 					window.addstr(0, 2, "Wave: " +str(waves_encountered))
-					window.addstr(y, x, "Game Over!")
+					window.addstr(maxy//2, maxx//2 - 4, "Game Over!")
 					game_over = True
 				for i in range(enemy_count):
 					enemy_list.append(Enemy("😈", 0, int(maxy/2), 1))
