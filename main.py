@@ -95,7 +95,9 @@ def main(window: curses.window):
 			elif key == "KEY_DOWN":
 				y += 1
 			elif key == "b":
-				towers.append(Tower("🗼", x, y))
+				#add restricted range
+				if x > 20 and y > maxy/2 + 3 or y < maxy/2 - 3:
+					towers.append(Tower("🗼", x, y))
 			elif key == "s":
 				enemy_list.append(Enemy("😈", 0, int(maxy/2), 1))
 			elif key == "q":
@@ -105,7 +107,7 @@ def main(window: curses.window):
 
 			#path outline
 			for box_y in range(int(maxx)):
-				window.addstr(int(maxy/2) - 3, box_y, "--")
+				window.addstr(int(maxy/2) - 3, box_y, "-")
 				window.addstr(int(maxy/2) + 3, box_y, "-")
 			#clear top border
 			for box_x in range(-3, 4):
