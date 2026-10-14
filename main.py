@@ -48,7 +48,7 @@ def main(window: curses.window):
 					window.addstr(maxy//2, maxx//2 - 4, "Game Over!")
 					game_over = True
 				for i in range(enemy_count):
-					enemy_list.append(Enemy("😈", 0, int(maxy/2), 1))
+					enemy_list.append(Enemy("╭༼☉ɷ⊙༽╭", 0, int(maxy/2), 1))
 
 			#enemymovement
 			i = 0
@@ -97,9 +97,9 @@ def main(window: curses.window):
 			elif key == "b":
 				#add restricted range
 				if x > 20 and y > maxy/2 + 3 or y < maxy/2 - 3:
-					towers.append(Tower("🗼", x, y))
+					towers.append(Tower("۩۩", x, y))
 			elif key == "s":
-				enemy_list.append(Enemy("😈", 0, int(maxy/2), 1))
+				enemy_list.append(Enemy("༼☉ɷ⊙༽", 0, int(maxy/2), 1))
 			elif key == "q":
 				game_speedup = True
 
