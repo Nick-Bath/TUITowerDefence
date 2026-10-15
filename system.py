@@ -26,18 +26,6 @@ class GameController:
                 return Direction.LEFT.value
             case "KEY_RIGHT":
                 return Direction.RIGHT.value
-
-
-    def towerController(self, towers):
-        try:
-            key = self.window.getkey()
-        except:
-            key = none   
-        if key == "b":
-            if x > 20 and y > maxy/2 + 3 or y < maxy/2 - 3:
-                towers.append(Tower("۩۩", x, y))
-                return towers
-
         
         """elif key == "s":
             enemy_list.append(Enemy("༼☉ɷ⊙༽", 0, int(maxy/2), 1))
