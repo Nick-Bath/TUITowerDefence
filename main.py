@@ -16,6 +16,7 @@ from system import GameController
 from enums.directions import Direction
 from enums.game_states import GameState
 from menu_choices import menu_choice
+from utilities.colours import init_colours
 		
 def main(window: curses.window):
 	#game init object wihin god object
@@ -31,7 +32,8 @@ def main(window: curses.window):
 	game_speedup = False
 	game_state = GameState.START
 	enemy_direction = Direction.RIGHT.value
-	
+ 
+	init_colours()
 	error = Error()
 	
 

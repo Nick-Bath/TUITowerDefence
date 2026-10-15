@@ -1,4 +1,7 @@
+import curses
 from entities.player import Player
+from utilities.colours import GREEN, RED
+
 
 class Render:
 	@staticmethod
@@ -17,8 +20,8 @@ class Render:
 		#rendering baddies
 		for baddie in enemy_list:
 			if i < enemies_spawned:
-				system.window.addstr(baddie.position[0], baddie.position[1], baddie.sprite)
-				system.window.addstr(baddie.position[0] + 1, baddie.position[1], str(baddie.hp))
+				system.window.addstr(baddie.position[0], baddie.position[1], baddie.sprite, curses.color_pair(RED))
+				system.window.addstr(baddie.position[0] + 1, baddie.position[1], str(baddie.hp), curses.color_pair(RED))
 			i += 1
 		#rendering towers
 		for tower in towers: 
@@ -32,20 +35,21 @@ class Render:
 						enemies_spawned -= 1
 		
 		#path outline
+		system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
 		for box_y in range(int(system.max_positions[1])):
-			system.window.addstr(int(system.max_positions[0]/2) - 3, box_y, "-")
-			system.window.addstr(int(system.max_positions[0]/2) + 3, box_y, "-")
+			system.window.addstr(int(system.max_positions[0]/2) - 3, box_y, "_")
+			system.window.addstr(int(system.max_positions[0]/2) + 3, box_y, "_")
 		#clear top border
 		for box_x in range(-3, 4):
 			system.window.addstr(int(system.max_positions[0]/2) - box_x, 0, " ")
 		#bottom bottom border
 		for box_x in range (-3, 4):
 			system.window.addstr(int(system.max_positions[0]/2) - box_x, system.max_positions[1] - 1, " ")
-
+		system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
 		system.window.addstr(player.position[0], player.position[1], player.sprite)
 		system.window.addstr(0, 2, "Wave: " +str(waves_encountered))
 		if len(error_message) > 0:
 			system.window.addstr(0, (system.max_positions[1]//2) - (len(error_message) // 2), error_message)
-			
+		
 
 		return enemies_spawned
