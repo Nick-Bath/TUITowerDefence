@@ -3,10 +3,13 @@
 import curses
 import time
 import math
-from entities import Enemy, Player, Tower, Wave
+from entities.player import Player
+from entities.enemy import Enemy
+from entities.wave import Wave
+from entities.tower import Tower
+
 from system import GameController
 from enums.directions import Direction
-
 		
 def main(window: curses.window):
 	#game init object wihin god object
