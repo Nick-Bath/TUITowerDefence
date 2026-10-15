@@ -15,7 +15,7 @@ def init_colours():
     curses.init_pair(BLACK, curses.COLOR_BLACK, -1)
 
 # Import to file with: from utilities.colours import COLOURS, YOU, WANT
-# Use with "windowname".attron(curses.color_pair(RED)) and then "windowname".attroff(curses.color_pair(RED))
+# Turn it on and off with "windowname".attron(curses.color_pair(RED)) and then "windowname".attroff(curses.color_pair(RED))
 # Assign to a variable: style = curses.color_pair(RED) | curses.A_BOLD
-# window.addstr(1, x, "PAUSED", curses.color_pair(RED) | curses.A_BOLD)
-# Or window.addstr(1, x, "PAUSED", style)
+# or if you just use it once window.addstr(1, x, "PAUSED", curses.color_pair(RED) | curses.A_BOLD)
+# Or window.addstr(1, x, "Printed in the style", style)
