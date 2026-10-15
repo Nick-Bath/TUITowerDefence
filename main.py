@@ -8,6 +8,7 @@ from entities.enemy import Enemy
 from entities.wave import Wave
 from entities.tower import Tower
 from utilities.render import Render
+from utilities.error import Error
 
 from system import GameController
 from enums.directions import Direction
@@ -26,6 +27,7 @@ def main(window: curses.window):
 	game_speedup = False
 	game_over  = False
 	enemy_direction = Direction.RIGHT.value
+	error = Error()
 
 	while 1:
 		
@@ -62,13 +64,21 @@ def main(window: curses.window):
 				if key in movement_keys:
 					player.move(system.playerMovement(key))
 				elif key == "b":
-					towers.append(Tower(player.position))			
+					if player.money - Tower.DEFAULT_COST >= 0:
+						towers.append(Tower(player.position))
+						player.spend_money(Tower.DEFAULT_COST)
+					else:
+						error.error_message = "Not Enough Money"	
+						error.clock_timestamp = clock					
 			except:
 				pass
 			#refresh screen and render objects
-			enemies_spawned = Render.RenderObjects(window, system.max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned)
+			enemies_spawned = Render.render_objects(window, system.max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error.error_message)
 
 			#Time Control
+			if (error.clock_timestamp + 400) % 10000 == clock % 10000:
+				error.error_message = ""
+				error.clock_timestamp = 0
 			if game_speedup is True:
 				time.sleep(0.001)
 				if clock > 10000:

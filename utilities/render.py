@@ -1,8 +1,8 @@
-
+from entities.player import Player
 
 class Render:
 	@staticmethod
-	def RenderObjects(window, max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned):
+	def render_objects(window, max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error_message=""):
 		window.erase()
 
 		#rendering displayed information
@@ -10,6 +10,7 @@ class Render:
 		window.addstr(1, 2, "Enemies = " + str(len(enemy_list)))
 		window.addstr(1, max_positions[1] - 20, "Player HP: " + str(player.hp))
 		window.addstr(1, max_positions[1] - 50, "Towers: " + str(len(towers)))
+		window.addstr(2, max_positions[1] - 20, "Money: " + str(player.money))
 		if clock % 100 == 0 and clock != 0 and enemies_spawned <= enemy_count:
 			enemies_spawned += 1
 		i = 0
@@ -26,6 +27,7 @@ class Render:
 				if tower.range_check(baddie) and clock % 10 == 0:
 					baddie.lose_hp(tower.damage)
 					if baddie.hp <= 0:
+						player.earn_money(baddie.level)
 						enemy_list.remove(baddie)
 						enemies_spawned -= 1
 		
@@ -42,5 +44,8 @@ class Render:
 
 		window.addstr(player.position[0], player.position[1], player.sprite)
 		window.addstr(0, 2, "Wave: " +str(waves_encountered))
+		if len(error_message) > 0:
+			window.addstr(0, (max_positions[1]//2) - (len(error_message) // 2), error_message)
+			
 
 		return enemies_spawned
