@@ -3,15 +3,19 @@
 import curses
 import time
 import math
+from game_menu import game_menu
 from entities.player import Player
 from entities.enemy import Enemy
 from entities.wave import Wave
 from entities.tower import Tower
+
 from utilities.render import Render
 from utilities.error import Error
 
 from system import GameController
 from enums.directions import Direction
+from enums.game_states import GameState
+from menu_choices import menu_choice
 		
 def main(window: curses.window):
 	#game init object wihin god object
@@ -25,25 +29,22 @@ def main(window: curses.window):
 	towers = []
 	clock = 0
 	game_speedup = False
-	game_over  = False
+	game_state = GameState.START
 	enemy_direction = Direction.RIGHT.value
+	
 	error = Error()
 
 	while 1:
 		
-		while game_over is True:
-			pass
-			
-
-		while game_over is False:
+		while game_state is not game_state.GAME_OVER:
 			if len(enemy_list) == 0:
 				waves_encountered += 1
 				enemy_count = Wave.wave_calc(waves_encountered)
 				enemies_spawned = 0
 				if Wave.wave_calc(waves_encountered) == 0 or player.hp <= 0:
 					window.addstr(0, 2, "Wave: " +str(waves_encountered))
-					window.addstr(system.max_positions[0]//2, system.max_positions[1]//2 - 4, "Game Over!")
-					game_over = True
+					game_state = GameState.GAME_OVER
+
 				for i in range(enemy_count):
 					enemy_list.append(Enemy("╭༼☉ɷ⊙༽╭", ((system.max_positions[0]//2), 0), 1))
 
@@ -60,9 +61,15 @@ def main(window: curses.window):
 			#character
 			try:
 				key = window.getkey()
-				movement_keys = ("KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT")
-				if key in movement_keys:
-					player.move(system.playerMovement(key))
+			except:
+				key = None
+			movement_keys = ("KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT")
+			if key in ("p", "\x1b") or game_state == GameState.START:
+				if game_state == GameState.PLAYING:
+					game_state = GameState.PAUSED
+				game_state = menu_choice(game_menu(window, game_state))
+			elif key in movement_keys:
+				player.move(system.playerMovement(key))
 				elif key == "b":
 					if player.money - Tower.DEFAULT_COST >= 0:
 						towers.append(Tower(player.position))
