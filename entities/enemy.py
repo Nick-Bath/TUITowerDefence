@@ -2,11 +2,14 @@ from entities.entity import Entity
 
 class Enemy(Entity):
 	"""Enemy Class"""
+	DEFAULT_HP = 100
+	DEFAULT_LEVEL = 1
 	def __init__(self, sprite, position, vel):
 		self.__sprite = sprite
 		self.__position = position
 		self.__vel = vel
-		self.__hp = 100
+		self.__hp = self.DEFAULT_LEVEL
+		self.__level = self.DEFAULT_LEVEL
 
 	@property
 	def sprite(self):
@@ -23,6 +26,10 @@ class Enemy(Entity):
 	@property
 	def position(self):
 		return self.__position
+
+	@property
+	def level(self):
+		return self.__level
 
 
 	def move(self, direction):
