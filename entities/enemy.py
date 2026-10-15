@@ -8,7 +8,7 @@ class Enemy(Entity):
 		self.__sprite = sprite
 		self.__position = position
 		self.__vel = vel
-		self.__hp = self.DEFAULT_LEVEL
+		self.__hp = self.DEFAULT_HP
 		self.__level = self.DEFAULT_LEVEL
 
 	@property

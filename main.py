@@ -33,6 +33,7 @@ def main(window: curses.window):
 	enemy_direction = Direction.RIGHT.value
 	
 	error = Error()
+	
 
 	while 1:
 		
@@ -64,21 +65,23 @@ def main(window: curses.window):
 			except:
 				key = None
 			movement_keys = ("KEY_UP", "KEY_DOWN", "KEY_LEFT", "KEY_RIGHT")
-			if key in ("p", "\x1b") or game_state == GameState.START:
+			if key in ("p", "\x1b") or game_state == GameState.START or game_state == GameState.GAME_OVER:
 				if game_state == GameState.PLAYING:
 					game_state = GameState.PAUSED
 				game_state = menu_choice(game_menu(window, game_state))
 			elif key in movement_keys:
 				player.move(system.playerMovement(key))
-				elif key == "b":
-					if player.money - Tower.DEFAULT_COST >= 0:
-						towers.append(Tower(player.position))
-						player.spend_money(Tower.DEFAULT_COST)
-					else:
-						error.error_message = "Not Enough Money"	
-						error.clock_timestamp = clock					
-			except:
-				pass
+			elif key == "b":
+				if player.money - Tower.DEFAULT_COST >= 0:
+					towers.append(Tower(player.position))
+					player.spend_money(Tower.DEFAULT_COST)
+				else:
+					error.error_message = "Not Enough Money"	
+					error.clock_timestamp = clock
+			elif key == "q":
+				game_speedup = True if game_speedup == False else False
+			
+
 			#refresh screen and render objects
 			enemies_spawned = Render.render_objects(window, system.max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error.error_message)
 
