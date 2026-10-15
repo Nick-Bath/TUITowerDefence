@@ -83,7 +83,7 @@ def main(window: curses.window):
 			
 
 			#refresh screen and render objects
-			enemies_spawned = Render.render_objects(window, system.max_positions, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error.error_message)
+			enemies_spawned = Render.render_objects(system, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error.error_message)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:
