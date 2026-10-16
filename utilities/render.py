@@ -1,5 +1,6 @@
 import curses
 from entities.player import Player
+from maps.map_generator import Map
 from utilities.colours import GREEN, RED
 
 
@@ -14,6 +15,8 @@ class Render:
 		system.window.addstr(1, system.max_positions[1] - 20, "Player HP: " + str(player.hp))
 		system.window.addstr(1, system.max_positions[1] - 50, "Towers: " + str(len(towers)))
 		system.window.addstr(2, system.max_positions[1] - 20, "Money: " + str(player.money))
+		system.window.addstr(0, 2, "Level: " +str(current_level) + ", Wave: " +str(wave_count))
+
 		if clock % 100 == 0 and clock != 0 and enemies_spawned <= enemy_count:
 			enemies_spawned += 1
 		i = 0
@@ -33,21 +36,19 @@ class Render:
 						player.earn_money(baddie.level)
 						enemy_list.remove(baddie)
 						enemies_spawned -= 1
-		
+
 		#path outline
 		system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
-		for box_y in range(int(system.max_positions[1])):
-			system.window.addstr(int(system.max_positions[0]/2) - 3, box_y, "_")
-			system.window.addstr(int(system.max_positions[0]/2) + 3, box_y, "_")
-		#clear top border
-		for box_x in range(-3, 4):
-			system.window.addstr(int(system.max_positions[0]/2) - box_x, 0, " ")
-		#bottom bottom border
-		for box_x in range (-3, 4):
-			system.window.addstr(int(system.max_positions[0]/2) - box_x, system.max_positions[1] - 1, " ")
+		map_test = Map()
+		try:
+			map_test.map_list[current_level - 1](system)
+		except IndexError: #defaults to level 1 when out of maps
+			map_test.map_list[0](system)
+		
 		system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
+		# player
 		system.window.addstr(player.position[0], player.position[1], player.sprite)
-		system.window.addstr(0, 2, "Level: " +str(current_level) + ", Wave: " +str(wave_count))
+		# Error?
 		if len(error_message) > 0:
 			system.window.addstr(0, (system.max_positions[1]//2) - (len(error_message) // 2), error_message)
 		

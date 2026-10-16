@@ -64,19 +64,10 @@ def main(window: curses.window):
 					wave_count = 0
 					current_level += 1
 				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, spawn_pos, enemy_vel)
-		
-			
-			#enemymovement
+			# wave movement
 			if current_wave.wave_movement(system, clock, enemies_spawned, enemy_direction):
 				player.take_damage()
-			# i = 0
-			# for baddie in current_wave.enemy_list:
-			# 	if baddie.position[1] == system.max_positions[1] - 8:
-			# 		current_wave.enemy_list.remove(baddie)
-			# 		player.take_damage()
-			# 	if clock % 15 == 0 and i < enemies_spawned:
-			# 		baddie.move(enemy_direction)
-			# 	i += 1
+
 
 			#character
 			try:
@@ -95,7 +86,7 @@ def main(window: curses.window):
 					towers.append(Tower(player.position))
 					player.spend_money(Tower.DEFAULT_COST)
 				else:
-					error.error_message = "Not Enough Money"	
+					error.error_message = "Not Enough Money"
 					error.clock_timestamp = clock
 			elif key == "q":
 				game_speedup = True if game_speedup == False else False
