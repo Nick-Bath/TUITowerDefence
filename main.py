@@ -35,31 +35,48 @@ def main(window: curses.window):
  
 	init_colours()
 	error = Error()
+
+	# Wave generation
+	WAVES_PER_LEVEL = 3
+	current_level = 1
+	wave_count = 0
+	difficulty = 1 # can be enumerated for Jon later
+	enemy_sprite = "╭༼☉ɷ⊙༽╭"
+	spawn_pos = ((system.max_positions[0]//2), 0)
+	enemy_vel = 1
+	current_wave = None
 	
 
 	while 1:
 		
 		while game_state is not game_state.GAME_OVER:
-			if len(enemy_list) == 0:
-				waves_encountered += 1
-				enemy_count = Wave.wave_calc(waves_encountered)
+			# Game Over check
+			if player.hp <= 0:
+				window.addstr(0, 2, "Wave: " +str(waves_encountered))
+				game_state = GameState.GAME_OVER
+
+			# Wave generation
+			# This can be wave controller in system?
+			if current_wave == None or len(current_wave.enemy_list) == 0:
 				enemies_spawned = 0
-				if Wave.wave_calc(waves_encountered) == 0 or player.hp <= 0:
-					window.addstr(0, 2, "Wave: " +str(waves_encountered))
-					game_state = GameState.GAME_OVER
-
-				for i in range(enemy_count):
-					enemy_list.append(Enemy("╭༼☉ɷ⊙༽╭", ((system.max_positions[0]//2), 0), 1))
-
+				wave_count += 1
+				if wave_count > WAVES_PER_LEVEL:
+					wave_count = 0
+					current_level += 1
+				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, spawn_pos, enemy_vel)
+		
+			
 			#enemymovement
-			i = 0
-			for baddie in enemy_list:
-				if baddie.position[1] == system.max_positions[1] - 8:
-					enemy_list.remove(baddie)
-					player.take_damage()
-				if clock % 15 == 0 and i < enemies_spawned:
-					baddie.move(enemy_direction)
-				i += 1
+			if current_wave.wave_movement(system, clock, enemies_spawned, enemy_direction):
+				player.take_damage()
+			# i = 0
+			# for baddie in current_wave.enemy_list:
+			# 	if baddie.position[1] == system.max_positions[1] - 8:
+			# 		current_wave.enemy_list.remove(baddie)
+			# 		player.take_damage()
+			# 	if clock % 15 == 0 and i < enemies_spawned:
+			# 		baddie.move(enemy_direction)
+			# 	i += 1
 
 			#character
 			try:
@@ -85,7 +102,7 @@ def main(window: curses.window):
 			
 
 			#refresh screen and render objects
-			enemies_spawned = Render.render_objects(system, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error.error_message)
+			enemies_spawned = Render.render_objects(system, player, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:

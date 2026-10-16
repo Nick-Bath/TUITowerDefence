@@ -5,7 +5,7 @@ from utilities.colours import GREEN, RED
 
 class Render:
 	@staticmethod
-	def render_objects(system, player, waves_encountered, clock, enemy_list, towers, enemy_count, enemies_spawned, error_message=""):
+	def render_objects(system, player, wave_count, current_level, clock, enemy_list, towers, enemy_count, enemies_spawned, error_message=""):
 		system.window.erase()
 
 		#rendering displayed information
@@ -47,7 +47,7 @@ class Render:
 			system.window.addstr(int(system.max_positions[0]/2) - box_x, system.max_positions[1] - 1, " ")
 		system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
 		system.window.addstr(player.position[0], player.position[1], player.sprite)
-		system.window.addstr(0, 2, "Wave: " +str(waves_encountered))
+		system.window.addstr(0, 2, "Level: " +str(current_level) + ", Wave: " +str(wave_count))
 		if len(error_message) > 0:
 			system.window.addstr(0, (system.max_positions[1]//2) - (len(error_message) // 2), error_message)
 		
