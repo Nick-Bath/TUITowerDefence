@@ -12,6 +12,8 @@ from entities.tower import Tower
 from utilities.render import Render
 from utilities.error import Error
 
+from maps.map_generator import Map
+
 from system import GameController
 from enums.directions import Direction
 from enums.game_states import GameState
@@ -24,14 +26,11 @@ def main(window: curses.window):
 	player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
 
 	waves_encountered = 0
-	wave_completed = True
 	enemies_spawned = 0
-	enemy_list = []
 	towers = []
 	clock = 0
 	game_speedup = False
 	game_state = GameState.START
-	enemy_direction = Direction.RIGHT.value
  
 	init_colours()
 	error = Error()
@@ -42,9 +41,14 @@ def main(window: curses.window):
 	wave_count = 0
 	difficulty = 1 # can be enumerated for Jon later
 	enemy_sprite = "╭༼☉ɷ⊙༽╭"
-	spawn_pos = ((system.max_positions[0]//2), 0)
 	enemy_vel = 1
 	current_wave = None
+
+	# Map generation
+	MAP_CHOICE = 0
+	map_design = Map(system, MAP_CHOICE)
+	map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[MAP_CHOICE]
+
 	
 
 	while 1:
@@ -61,11 +65,12 @@ def main(window: curses.window):
 				enemies_spawned = 0
 				wave_count += 1
 				if wave_count > WAVES_PER_LEVEL:
-					wave_count = 0
+					wave_count = 1
 					current_level += 1
-				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, spawn_pos, enemy_vel)
+
+				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, map_design.enemy_spawn_pos, enemy_vel)
 			# wave movement
-			if current_wave.wave_movement(system, clock, enemies_spawned, enemy_direction):
+			if current_wave.wave_movement(clock, map_design, enemies_spawned):
 				player.take_damage()
 
 
@@ -93,7 +98,7 @@ def main(window: curses.window):
 			
 
 			#refresh screen and render objects
-			enemies_spawned = Render.render_objects(system, player, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
+			enemies_spawned = Render.render_objects(system, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:

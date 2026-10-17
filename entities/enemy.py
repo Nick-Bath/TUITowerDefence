@@ -1,4 +1,5 @@
 from entities.entity import Entity
+from enums.directions import Direction
 
 class Enemy(Entity):
 	"""Enemy Class"""
@@ -10,6 +11,7 @@ class Enemy(Entity):
 		self.__vel = vel
 		self.__hp = self.DEFAULT_HP
 		self.__level = self.DEFAULT_LEVEL
+		self.__current_direction = Direction.RIGHT.value
 
 	@property
 	def sprite(self):
@@ -31,6 +33,13 @@ class Enemy(Entity):
 	def level(self):
 		return self.__level
 
+	@property
+	def current_direction(self):
+		return self.__current_direction
+
+	@current_direction.setter
+	def current_direction(self, direction):
+		self.__current_direction = direction
 
 	def move(self, direction):
 		self.__position = (self.__position[0] + direction[0] * self.__vel, self.__position[1] + direction[1] * self.__vel)
