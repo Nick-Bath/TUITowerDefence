@@ -58,6 +58,6 @@ class Render:
 		# Error?
 		if len(error_message) > 0:
 			system.window.addstr(0, (system.max_positions[1]//2) - (len(error_message) // 2), error_message)
-		
+
 
 		return enemies_spawned
