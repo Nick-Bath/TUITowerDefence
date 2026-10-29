@@ -107,40 +107,11 @@ def main(window: curses.window):
 
 
 			#build menu
-			height, width = 4, 19
-			if player.position > (system.max_positions[0]//2, system.max_positions[1]//2):
-				top, left = player.position[0] + 1, player.position[1] - width // 2 + 1
-			else:
-				top, left = player.position[0] - 4, player.position[1] - width // 2 + 1
-	
-			tower_selection_pad = curses.newpad(20, 20)
-			alt_tower_list = ["1", "2", "3", "4"]
 			
-			if key in ("1", "2", "3", "4"):
-				selected_tower = int(key) - 1
-
-			if build_menu_active:
-				tower_selection_pad.erase()
-				for y in range(height):
-					tower_selection_pad.addch(y,0, "|")
-					tower_selection_pad.addch(y,width - 1, "|")
-				for x in range(1, width - 1):
-					tower_selection_pad.addch(0,x, "-")
-					tower_selection_pad.addch(height - 1,x, "-")
-				spacing = 0
-				for i in range(len(alt_tower_list)):
-					col = i + spacing + 3
-					tower_selection_pad.addch(height - 3, i + spacing + 3, alt_tower_list[i])
-					tower_selection_pad.addch(height - 2, i + spacing + 3, "$")
-					if i == selected_tower:
-						tower_selection_pad.addch(height - 3, col - 1, "[")
-						tower_selection_pad.addch(height - 3, col + 1, "]")
-					spacing += 3
-				
-				tower_selection_pad.refresh(0, 0, top, left, top + height - 1, left + width - 1)
 
 			#refresh screen and render objects
 			enemies_spawned = Render.render_objects(system, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
+			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:
