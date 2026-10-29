@@ -35,6 +35,6 @@ def game_menu(stdscr, game_state):
 			selected = (selected + 1) % len(options_list)
 		elif key == "\n":
 			return options_list[selected]
-		elif key in ("p", "\x1b"): # ESCAPE character
+		elif key in ("p", "\x1b"):
 			return "Resume"
 	
