@@ -6,16 +6,16 @@ from utilities.colours import GREEN, RED
 
 class Render:
 	@staticmethod
-	def render_objects(system, player, map_design, MAP_CHOICE, wave_count, current_level, clock, enemy_list, towers, enemy_count, enemies_spawned, error_message=""):
+	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, wave_count, current_level, clock, enemy_list, towers, enemy_count, enemies_spawned, error_message=""):
 		system.window.erase()
-
+		
 		#rendering displayed information
-		system.window.addstr(2, 2, f"{clock}")
-		system.window.addstr(1, 2, "Enemies = " + str(len(enemy_list)))
-		system.window.addstr(1, system.max_positions[1] - 20, "Player HP: " + str(player.hp))
-		system.window.addstr(1, system.max_positions[1] - 50, "Towers: " + str(len(towers)))
-		system.window.addstr(2, system.max_positions[1] - 20, "Money: " + str(player.money))
-		system.window.addstr(0, 2, "Level: " +str(current_level) + ", Wave: " +str(wave_count))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, f"{clock}")
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Enemies = " + str(len(enemy_list)))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Player HP: " + str(player.hp))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 50, "Towers: " + str(len(towers)))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Money: " + str(player.money))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 1, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Level: " +str(current_level) + ", Wave: " +str(wave_count))
 
 
 		if clock % 100 == 0 and clock != 0 and enemies_spawned <= enemy_count:
@@ -62,7 +62,7 @@ class Render:
 		# This refreshes coords until maps become a pad
 		map_design.map_coords_hor = []
 		map_design.map_coords_ver = []
-		map_design.map_list[MAP_CHOICE](system)
+		map_design.map_list[MAP_CHOICE](system, WINDOW_MIN_SIZE)
 
 		
 		system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
@@ -71,7 +71,7 @@ class Render:
 		system.window.addstr(player.position[0], player.position[1], player.sprite)
 		# Error?
 		if len(error_message) > 0:
-			system.window.addstr(0, (system.max_positions[1]//2) - (len(error_message) // 2), error_message)
+			system.window.addstr(0, (WINDOW_MIN_SIZE[1]//2) - (len(error_message) // 2), error_message)
 
 
 		return enemies_spawned

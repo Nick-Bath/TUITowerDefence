@@ -1,5 +1,6 @@
 import curses
 from entities.core import Core
+from utilities.colours import GREEN, RED
 
 class Map:
         DEFAULT_CORE_POS = (10, 50)
@@ -7,33 +8,47 @@ class Map:
         LANE_HOR_SIZE = 12
         LANE_VER_SIZE = 4
 
-        def __init__ (self, system, MAP_CHOICE):
+        def __init__ (self, system, WINDOW_MIN_SIZE, MAP_CHOICE):
                 self.map_list = [self.map_one, self.map_two] #fill list with levels
-                self.core_spawn_locations = [(system.max_positions[0] // 2 - 1, system.max_positions[1] - 8), (system.max_positions[0] // 2, system.max_positions[1] - 8)]
+                self.core_spawn_locations = [(system.max_positions[0] // 2 - 1, system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2) - 8), (WINDOW_MIN_SIZE[0] // 2 - 1, WINDOW_MIN_SIZE[1] - 8)]
                 self.core = Core(self.core_spawn_locations[MAP_CHOICE])
-                self.enemy_spawn_pos_list = [(system.max_positions[0]//2, 0), (system.max_positions[0] // 5, 0)] #this needs to default to level 1 (see DEFAULT_ENEMY_SPAWN_POS)
+                self.enemy_spawn_pos_list = [(system.max_positions[0]//2, system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2)), (WINDOW_MIN_SIZE[0] // 5, 0)] #this needs to default to level 1 (see DEFAULT_ENEMY_SPAWN_POS)
                 self.enemy_spawn_pos = (self.enemy_spawn_pos_list[MAP_CHOICE])
                 self.map_coords_hor = [] #this is awful because it's appending infinitely - fix by making a pad (doesn't get refreshed every loop)
                 self.map_coords_ver = [] #see above
 
-        def map_one(self, system):
-            for box_y in range(int(system.max_positions[1])):
-                system.window.addstr(int(system.max_positions[0]/2) - 3, box_y, "_")
-                self.map_coords_hor.append((int(system.max_positions[0]/2) - 3, box_y))
-                system.window.addstr(int(system.max_positions[0]/2) + 3, box_y, "_")
-                self.map_coords_hor.append((int(system.max_positions[0]/2) + 3, box_y))
+        def map_one(self, system, WINDOW_MIN_SIZE):
+            for box_y in range(int(system.max_positions[1]//2 - (int(WINDOW_MIN_SIZE[1]) // 2)), int(system.max_positions[1]//2 + (int(WINDOW_MIN_SIZE[1]) // 2))):
+                system.window.addstr(int(system.max_positions[0]//2 - 3), box_y, "_")
+                self.map_coords_hor.append((int(WINDOW_MIN_SIZE[0]/2) - 3, box_y))
+                system.window.addstr(int(system.max_positions[0]//2 + 3), box_y, "_")
+                self.map_coords_hor.append((int(WINDOW_MIN_SIZE[0]/2) + 3, box_y))
 
-            self.enemy_spawn_pos = ((system.max_positions[0]//2), 0)
+            #border
+            system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
+            
+            for i in range(int(system.max_positions[1]//2 - (int(WINDOW_MIN_SIZE[1]) // 2)), int(system.max_positions[1]//2 + (int(WINDOW_MIN_SIZE[1]) // 2))):
+                system.window.addstr(int(system.max_positions[0]//2 - (int(WINDOW_MIN_SIZE[0]) // 2)), i, "_")
+                system.window.addstr(int(system.max_positions[0]//2 + (int(WINDOW_MIN_SIZE[0]) // 2) - 1), i, "_")
+            for i in range(int(system.max_positions[0]//2 - (int(WINDOW_MIN_SIZE[0]) // 2) + 1), int(system.max_positions[0]//2 - 3)):
+                system.window.addstr(i, int(system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2) - 1), "|")
+                system.window.addstr(i, int(system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2)), "|")
+            for i in range(int(system.max_positions[0]//2 + 4), int(system.max_positions[0]//2 + (int(WINDOW_MIN_SIZE[0]) // 2))):
+                system.window.addstr(i, int(system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2)), "|")
+                system.window.addstr(i, int(system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2) - 1), "|")
+
+            system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
+
             self.core.display_sprite(system)
 
-        def map_two(self, system):
-            self.enemy_spawn_pos = (system.max_positions[0] // 5, 0)
+        def map_two(self, system, WINDOW_MIN_SIZE):
+            self.enemy_spawn_pos = (WINDOW_MIN_SIZE[0] // 5, 0)
             self.core.display_sprite(system)
 
             #first horizontal line
-            range_end = int(system.max_positions[1] // 4)
-            y_coord_top = int(system.max_positions[0]/5) - 2
-            y_coord_bottom = int(system.max_positions[0]/5) + 2
+            range_end = int(WINDOW_MIN_SIZE[1] // 4)
+            y_coord_top = int(WINDOW_MIN_SIZE[0]/5) - 2
+            y_coord_bottom = int(WINDOW_MIN_SIZE[0]/5) + 2
             for i in range(range_end):
                 system.window.addstr(y_coord_top, i, "_")
                 self.map_coords_hor.append((y_coord_top, i))
@@ -67,7 +82,7 @@ class Map:
             #top
             y_coord_top = range_end - 1
             range_start = x_coord_right + 1
-            range_end = system.max_positions[1]
+            range_end = WINDOW_MIN_SIZE[1]
             for i in range (range_start, range_end):
                 system.window.addstr(y_coord_top, i, "_")
                 self.map_coords_hor.append((y_coord_top, i))
