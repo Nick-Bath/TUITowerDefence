@@ -33,14 +33,28 @@ class Render:
 		#rendering towers
 		for tower in towers: 
 			system.window.addstr(tower.position[0], tower.position[1], tower.sprite)
+			tower.prune_targets(enemy_list)
 			for baddie in enemy_list:
-				if tower.range_check(baddie) and clock % 10 == 0:
-					baddie.lose_hp(tower.damage)
-					if baddie.hp <= 0:
-						player.earn_money(baddie.level)
-						enemy_list.remove(baddie)
-						enemies_spawned -= 1
-						tower.remove_target(baddie)
+				tower.range_check(baddie)
+			tower.fire(clock)
+
+		# move projectiles and apply hits, once per enemy per frame
+		for baddie in enemy_list:
+			baddie.update_projectiles(clock)
+
+		# remove dead enemies (iterate over a copy so the list can change safely)
+		for baddie in list(enemy_list):
+			if baddie.hp <= 0:
+				player.earn_money(baddie.level)
+				enemy_list.remove(baddie)
+				enemies_spawned -= 1
+				for tower in towers:
+					tower.remove_target(baddie)
+
+		# render projectiles for every enemy (this was only drawing the last enemy's before)
+		for baddie in enemy_list:
+			for projectile in baddie.projectiles:
+				system.window.addstr(projectile.position[0], projectile.position[1], projectile.sprite)
 
 		# Map
 		system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
