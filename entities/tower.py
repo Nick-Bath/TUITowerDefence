@@ -1,4 +1,6 @@
 import math
+from entities.projectile import Projectile
+from utilities.distance import distance
 
 class Tower:
 	DEFAULT_SPRITE = "۩۩"
@@ -8,6 +10,7 @@ class Tower:
 	DEFAULT_COST = 10
 	DEFAULT_MAX_TARGETS = 1
 	DEFAULT_N_TARGETS = 0
+	DEFAULT_FIRE_RATE = 20
 	def __init__(self, position):
 		self.__sprite = self.DEFAULT_SPRITE
 		self.__position = position
@@ -17,6 +20,7 @@ class Tower:
 		self.__targets = []
 		self.__n_targets = self.DEFAULT_N_TARGETS
 		self.__max_targets = self.DEFAULT_MAX_TARGETS
+		self.__fire_rate = self.DEFAULT_FIRE_RATE
 
 	@property
 	def sprite(self):
@@ -50,24 +54,36 @@ class Tower:
 	def max_targets(self):
 		return self.__max_targets
 
+	@property
+	def fire_rate(self):
+		return self.__fire_rate
+
 	def add_target(self, enemy):
 		if self.__n_targets < self.__max_targets:
 			self.__n_targets += 1
 			self.__targets.append(enemy)
-			return True
-		return False
+
 
 	def remove_target(self, enemy):
-		self.__targets.remove(enemy)
-		self.__n_targets -= 1
+		if enemy in self.__targets:
+			self.__targets.remove(enemy)
+			self.__n_targets -= 1
+
+	def prune_targets(self, enemy_list):
+		# drop targets that were removed from the game by anything (death, reaching the core)
+		for enemy in list(self.__targets):
+			if enemy not in enemy_list:
+				self.remove_target(enemy)
 
 	def range_check(self, enemy):
-		if math.sqrt(pow(enemy.position[1] - self.__position[1], 2) + pow(enemy.position[0] - self.__position[0], 2)) < self.__range:
-			if enemy in self.__targets:
-				return True
-			elif self.add_target(enemy) is True:
-				return True
-		else:
-			if enemy in self.__targets:
+		if distance(enemy.position, self.__position) < self.__range:
+			if enemy not in self.__targets: 
+				self.add_target(enemy)
+		elif enemy in self.__targets:
 				self.remove_target(enemy)
-		return False
+
+	def fire(self, clock):
+		if clock % self.__fire_rate == 0:
+			for enemy in self.__targets:
+				enemy.add_projectile(self.__position, self.__damage)
+			
