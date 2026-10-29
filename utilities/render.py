@@ -61,3 +61,34 @@ class Render:
 
 
 		return enemies_spawned
+
+	
+	@staticmethod
+	def buildMenu(system, player, key, build_menu_active, selected_tower):
+		height, width = 4, 19
+		if player.position > (system.max_positions[0]//2, system.max_positions[1]//2):
+			top, left = player.position[0] + 1, player.position[1] - width // 2 + 1
+		else:
+			top, left = player.position[0] - 4, player.position[1] - width // 2 + 1
+
+		tower_selection_pad = curses.newpad(height, width)
+		alt_tower_list = ["1", "2", "3", "4"]
+		
+		if key in ("1", "2", "3", "4"):
+			selected_tower = int(key) - 1
+
+		if build_menu_active:
+			tower_selection_pad.erase()
+			spacing = 0
+			for i in range(len(alt_tower_list)):
+				col = i + spacing + 3
+				tower_selection_pad.addch(height - 3, i + spacing + 3, alt_tower_list[i])
+				tower_selection_pad.addstr(height - 2, i + spacing + 2, "$10")
+				if i == selected_tower:
+					tower_selection_pad.addch(height - 3, col - 1, "[")
+					tower_selection_pad.addch(height - 3, col + 1, "]")
+				spacing += 3
+			tower_selection_pad.box()
+			tower_selection_pad.refresh(0, 0, top, left, top + height - 1, left + width - 1)
+
+		return selected_tower
