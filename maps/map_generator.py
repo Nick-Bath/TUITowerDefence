@@ -1,13 +1,15 @@
 import curses
 from entities.core import Core
 
+MAP_CHOICE = 0
+MAP_OPTIONS = {"Map 1": 0, "Map 2": 1}
 class Map:
         DEFAULT_CORE_POS = (10, 50)
         DEFAULT_ENEMY_SPAWN_POS = (0, 0) # this somehow needs to access system to get max_positions
         LANE_HOR_SIZE = 12
         LANE_VER_SIZE = 4
 
-        def __init__ (self, system, MAP_CHOICE):
+        def __init__ (self, system):
                 self.map_list = [self.map_one, self.map_two] #fill list with levels
                 self.core_spawn_locations = [(system.max_positions[0] // 2 - 1, system.max_positions[1] - 8), (system.max_positions[0] // 2, system.max_positions[1] - 8)]
                 self.core = Core(self.core_spawn_locations[MAP_CHOICE])
