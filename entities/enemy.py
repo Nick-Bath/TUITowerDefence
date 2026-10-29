@@ -1,5 +1,7 @@
 from entities.entity import Entity
 from enums.directions import Direction
+from entities.projectile import Projectile
+from utilities.distance import distance
 
 class Enemy(Entity):
 	"""Enemy Class"""
@@ -12,6 +14,7 @@ class Enemy(Entity):
 		self.__hp = self.DEFAULT_HP
 		self.__level = self.DEFAULT_LEVEL
 		self.__current_direction = Direction.RIGHT.value
+		self.__projectiles = []
 
 	@property
 	def sprite(self):
@@ -36,6 +39,24 @@ class Enemy(Entity):
 	@property
 	def current_direction(self):
 		return self.__current_direction
+
+	@property
+	def projectiles(self):
+		return self.__projectiles
+
+	def add_projectile(self, position, damage):
+		self.__projectiles.append(Projectile(position, self, damage))
+
+	def update_projectiles(self, clock):
+		to_remove = []
+		for projectile in self.projectiles:
+			if distance(projectile.position, self.position) == 0:
+				self.lose_hp(projectile.damage)
+				to_remove.append(projectile)
+			elif clock % projectile.speed == 0:
+				projectile.move(self)
+		for projectile in to_remove:
+			self.projectiles.remove(projectile)
 
 	@current_direction.setter
 	def current_direction(self, direction):

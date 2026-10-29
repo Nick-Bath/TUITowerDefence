@@ -38,13 +38,15 @@ def main(window: curses.window):
 		return
 
 	player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
-
 	waves_encountered = 0
 	enemies_spawned = 0
 	towers = []
 	clock = 0
 	game_speedup = False
 	game_state = GameState.START
+
+	build_menu_active = False
+	selected_tower = None
  
 	init_colours()
 	error = Error()
@@ -100,19 +102,30 @@ def main(window: curses.window):
 				game_state = menu_choice(game_menu(window, game_state))
 			elif key in movement_keys:
 				player.move(system.playerMovement(key))
-			elif key == "b":
+			#build given build menu is open
+			elif key == "b" and build_menu_active == True:
+				build_menu_active = False
+				selected_tower = None
 				if player.money - Tower.DEFAULT_COST >= 0:
 					towers.append(Tower(player.position))
 					player.spend_money(Tower.DEFAULT_COST)
 				else:
 					error.error_message = "Not Enough Money"
 					error.clock_timestamp = clock
+			#open build menu
+			elif key == "b" and build_menu_active == False:
+				build_menu_active = True
 			elif key == "q":
 				game_speedup = True if game_speedup == False else False
 			
 
+
+			#build menu
+			
+
 			#refresh screen and render objects
 			enemies_spawned = Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
+			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:
