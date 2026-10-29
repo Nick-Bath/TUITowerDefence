@@ -72,7 +72,7 @@ class Render:
 			top, left = player.position[0] - 4, player.position[1] - width // 2 + 1
 
 		tower_selection_pad = curses.newpad(height, width)
-		alt_tower_list = ["1", "2", "3", "4"]
+		alt_tower_list = ["۩", "✪", "♖", "✷"]
 		
 		if key in ("1", "2", "3", "4"):
 			selected_tower = int(key) - 1
@@ -82,11 +82,11 @@ class Render:
 			spacing = 0
 			for i in range(len(alt_tower_list)):
 				col = i + spacing + 3
-				tower_selection_pad.addch(height - 3, i + spacing + 3, alt_tower_list[i])
+				tower_selection_pad.addstr(height - 3, i + spacing + 3, alt_tower_list[i])
 				tower_selection_pad.addstr(height - 2, i + spacing + 2, "$10")
 				if i == selected_tower:
-					tower_selection_pad.addch(height - 3, col - 1, "[")
-					tower_selection_pad.addch(height - 3, col + 1, "]")
+					tower_selection_pad.addch(height - 3, col - 2, "[")
+					tower_selection_pad.addch(height - 3, col + 2, "]")
 				spacing += 3
 			tower_selection_pad.box()
 			tower_selection_pad.refresh(0, 0, top, left, top + height - 1, left + width - 1)
