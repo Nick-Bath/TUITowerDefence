@@ -24,13 +24,15 @@ def main(window: curses.window):
 	#game init object wihin god object
 	system = GameController(window)
 	player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
-
 	waves_encountered = 0
 	enemies_spawned = 0
 	towers = []
 	clock = 0
 	game_speedup = False
 	game_state = GameState.START
+
+	build_menu_active = False
+	selected_tower = None
  
 	init_colours()
 	error = Error()
@@ -86,16 +88,56 @@ def main(window: curses.window):
 				game_state = menu_choice(game_menu(window, game_state))
 			elif key in movement_keys:
 				player.move(system.playerMovement(key))
-			elif key == "b":
+			#build given build menu is open
+			elif key == "b" and build_menu_active == True:
+				build_menu_active = False
+				selected_tower = None
 				if player.money - Tower.DEFAULT_COST >= 0:
 					towers.append(Tower(player.position))
 					player.spend_money(Tower.DEFAULT_COST)
 				else:
 					error.error_message = "Not Enough Money"
 					error.clock_timestamp = clock
+			#open build menu
+			elif key == "b" and build_menu_active == False:
+				build_menu_active = True
 			elif key == "q":
 				game_speedup = True if game_speedup == False else False
 			
+
+
+			#build menu
+			height, width = 4, 19
+			if player.position > (system.max_positions[0]//2, system.max_positions[1]//2):
+				top, left = player.position[0] + 1, player.position[1] - width // 2 + 1
+			else:
+				top, left = player.position[0] - 4, player.position[1] - width // 2 + 1
+	
+			tower_selection_pad = curses.newpad(20, 20)
+			alt_tower_list = ["1", "2", "3", "4"]
+			
+			if key in ("1", "2", "3", "4"):
+				selected_tower = int(key) - 1
+
+			if build_menu_active:
+				tower_selection_pad.erase()
+				for y in range(height):
+					tower_selection_pad.addch(y,0, "|")
+					tower_selection_pad.addch(y,width - 1, "|")
+				for x in range(1, width - 1):
+					tower_selection_pad.addch(0,x, "-")
+					tower_selection_pad.addch(height - 1,x, "-")
+				spacing = 0
+				for i in range(len(alt_tower_list)):
+					col = i + spacing + 3
+					tower_selection_pad.addch(height - 3, i + spacing + 3, alt_tower_list[i])
+					tower_selection_pad.addch(height - 2, i + spacing + 3, "$")
+					if i == selected_tower:
+						tower_selection_pad.addch(height - 3, col - 1, "[")
+						tower_selection_pad.addch(height - 3, col + 1, "]")
+					spacing += 3
+				
+				tower_selection_pad.refresh(0, 0, top, left, top + height - 1, left + width - 1)
 
 			#refresh screen and render objects
 			enemies_spawned = Render.render_objects(system, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
