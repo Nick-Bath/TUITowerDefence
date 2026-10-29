@@ -40,6 +40,7 @@ class Render:
 						player.earn_money(baddie.level)
 						enemy_list.remove(baddie)
 						enemies_spawned -= 1
+						tower.remove_target(baddie)
 
 		# Map
 		system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
