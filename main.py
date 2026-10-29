@@ -23,6 +23,20 @@ from utilities.colours import init_colours
 def main(window: curses.window):
 	#game init object wihin god object
 	system = GameController(window)
+
+	# Minimum window size check
+	# WINDOW_MIN_SIZE = (system.max_positions[0] - 1, system.max_positions[1] - 1) # for testing
+	# For launch
+	WINDOW_MIN_SIZE = (50, 150)
+
+
+	RESIZE_TEXT = "Window too small. Please resize to at least 50x150"
+	if system.max_positions[0] < WINDOW_MIN_SIZE[0] or system.max_positions[1] < WINDOW_MIN_SIZE[1]:
+		window.addstr(system.max_positions[0]//2, system.max_positions[1]//2 - (len(RESIZE_TEXT) // 2), RESIZE_TEXT)
+		window.refresh()
+		time.sleep(3)
+		return
+
 	player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
 
 	waves_encountered = 0
@@ -46,7 +60,7 @@ def main(window: curses.window):
 
 	# Map generation
 	MAP_CHOICE = 0
-	map_design = Map(system, MAP_CHOICE)
+	map_design = Map(system, WINDOW_MIN_SIZE, MAP_CHOICE)
 	map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[MAP_CHOICE]
 
 	
@@ -98,7 +112,7 @@ def main(window: curses.window):
 			
 
 			#refresh screen and render objects
-			enemies_spawned = Render.render_objects(system, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
+			enemies_spawned = Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
 
 			#Time Control
 			if (error.clock_timestamp + 400) % 10000 == clock % 10000:
