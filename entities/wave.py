@@ -8,13 +8,14 @@ class Wave():
 	SPRITE_SIZE_HOR = 9
 	SPRITE_SIZE_VER = 1
 	# sprite, spawn_pos, vel can eventually be enemy_type?
-	def __init__(self, level, wave, difficulty, sprite, spawn_pos, enemy_vel):
+	def __init__(self, level, wave, difficulty, sprite, spawn_pos, enemy_vel, audio):
 		self.level = level
 		self.wave = wave
 		self.difficulty = difficulty
 		self.sprite = sprite
 		self.spawn_pos = spawn_pos
 		self.enemy_vel = enemy_vel
+		self.audio = audio
 		self.enemy_list = self.create_enemy_list()
 		self.enemy_count = len(self.enemy_list)
 
@@ -24,7 +25,7 @@ class Wave():
 	def create_enemy_list(self):
 		self.enemylist = []
 		for _ in range(0, self.wave_calc()): # check for off by 1 error
-			self.enemylist.append(Enemy(self.sprite, self.spawn_pos, self.enemy_vel))
+			self.enemylist.append(Enemy(self.sprite, self.spawn_pos, self.enemy_vel, self.audio))
 		return self.enemylist
 
 	def wave_movement(self, clock, map_design, enemies_spawned):

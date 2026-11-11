@@ -7,7 +7,7 @@ class Enemy(Entity):
 	"""Enemy Class"""
 	DEFAULT_HP = 100
 	DEFAULT_LEVEL = 1
-	def __init__(self, sprite, position, vel):
+	def __init__(self, sprite, position, vel, audio):
 		self.__sprite = sprite
 		self.__position = position
 		self.__vel = vel
@@ -15,6 +15,7 @@ class Enemy(Entity):
 		self.__level = self.DEFAULT_LEVEL
 		self.__current_direction = Direction.RIGHT.value
 		self.__projectiles = []
+		self.__audio = audio
 
 	@property
 	def sprite(self):
@@ -51,6 +52,7 @@ class Enemy(Entity):
 		to_remove = []
 		for projectile in self.projectiles:
 			if distance(projectile.position, self.position) == 0:
+				self.__audio.play("scissors")
 				self.lose_hp(projectile.damage)
 				to_remove.append(projectile)
 			elif clock % projectile.speed == 0:
@@ -68,3 +70,5 @@ class Enemy(Entity):
 	
 	def lose_hp(self, damage):
 		self.__hp -= damage
+		#self.__audio.play("scissors")
+		

@@ -3,6 +3,7 @@
 import curses
 import time
 import math
+from utilities.sound import SoundManager
 from game_menu import game_menu
 from entities.player import Player
 from entities.enemy import Enemy
@@ -20,7 +21,7 @@ from enums.game_states import GameState
 from menu_options import menu_choice
 from utilities.colours import init_colours
 		
-def main(window: curses.window):
+def main(window: curses.window, audio: SoundManager):
 	#game init object wihin god object
 	system = GameController(window)
  
@@ -87,7 +88,7 @@ def main(window: curses.window):
 					wave_count = 1
 					current_level += 1
 
-				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, map_design.enemy_spawn_pos, enemy_vel)
+				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, map_design.enemy_spawn_pos, enemy_vel, audio)
 			# wave movement
 			if current_wave.wave_movement(clock, map_design, enemies_spawned):
 				player.take_damage()
@@ -138,4 +139,9 @@ def main(window: curses.window):
 
 
 if __name__ == "__main__":
-	curses.wrapper(main)
+	audio = SoundManager()
+	audio.load("scissors", "scissors.wav", volume=0.5)
+	try:
+		curses.wrapper(main, audio)
+	finally:
+		audio.close()
