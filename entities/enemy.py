@@ -50,14 +50,14 @@ class Enemy(Entity):
 	def projectiles(self):
 		return self.__projectiles
 
-	def add_projectile(self, position, damage):
-		self.__projectiles.append(Projectile(position, self, damage))
+	def add_projectile(self, position, damage, projectile_sprite, projectile_sound):
+		self.__projectiles.append(Projectile(position, self, damage, projectile_sprite, projectile_sound))
 
 	def update_projectiles(self, clock):
 		to_remove = []
 		for projectile in self.projectiles:
 			if distance(projectile.position, self.position) == 0:
-				self.__audio.play("scissors")
+				self.__audio.play(projectile.sound)
 				self.lose_hp(projectile.damage)
 				to_remove.append(projectile)
 			elif clock % projectile.speed == 0:
