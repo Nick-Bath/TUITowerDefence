@@ -2,7 +2,9 @@ import curses
 from entities.player import Player
 from maps.map_generator import Map
 from utilities.colours import GREEN, RED
+from entities.tower import Tower, Magic, Snipper, Rock, Power
 
+TOWER_TYPES = [Snipper, Power, Rock, Magic]
 
 class Render:
 	@staticmethod
@@ -76,16 +78,16 @@ class Render:
 		alt_tower_list = ["۩", "✪", "♖", "✷"]
 		
 		if key in ("1", "2", "3", "4"):
-			selected_tower = int(key) - 1
+			selected_tower = TOWER_TYPES[int(key) - 1]
 
 		if build_menu_active:
 			tower_selection_pad.erase()
 			spacing = 0
-			for i in range(len(alt_tower_list)):
+			for i, tower_class in enumerate(TOWER_TYPES):
 				col = i + spacing + 3
-				tower_selection_pad.addstr(height - 3, i + spacing + 3, alt_tower_list[i])
-				tower_selection_pad.addstr(height - 2, i + spacing + 2, "$10")
-				if i == selected_tower:
+				tower_selection_pad.addstr(height - 3, i + spacing + 3, tower_class.DEFAULT_SPRITE)
+				tower_selection_pad.addstr(height - 2, i + spacing + 2, f"${tower_class.DEFAULT_COST}")
+				if tower_class is selected_tower:
 					tower_selection_pad.addch(height - 3, col - 2, "[")
 					tower_selection_pad.addch(height - 3, col + 2, "]")
 				spacing += 3

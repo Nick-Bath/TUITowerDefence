@@ -1,16 +1,20 @@
 from utilities.distance import distance
 
 class Projectile:
-	DEFAULT_SPRITE = "✄"
 	DEFAULT_VELOCITY = 2
-	def __init__(self, position, enemy, damage):
-		self.__sprite = self.DEFAULT_SPRITE
+	def __init__(self, position, enemy, damage, projectile_sprite, projectile_sound):
 		self.__position = position
 		self.__target = enemy.position
 		self.__velocity = self.DEFAULT_VELOCITY
 		self.__damage = damage
 		self.__speed = 15
+		self.__sprite = projectile_sprite
+		self.__sound = projectile_sound
 
+	@property
+	def sound(self):
+		return self.__sound
+	
 	@property
 	def sprite(self):
 		return self.__sprite
