@@ -26,7 +26,7 @@ class Enemy(Entity):
 		self._projectiles = []
 		self._audio = audio
 		self.released = False
-    self._route_position = 0
+		self._route_position = 0
 
 	@property
 	def sprite(self):
