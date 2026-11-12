@@ -7,7 +7,8 @@ from utilities.sound import SoundManager
 from game_menu import game_menu
 from entities.player import Player
 from entities.enemy import Enemy
-from entities.wave import Wave
+from functions.wave import Wave
+from functions.enemy_list import Enemy_list
 from entities.tower import Tower
 
 from utilities.render import Render
@@ -26,9 +27,10 @@ def main(window: curses.window, audio: SoundManager):
 	system = GameController(window)
  
 	# Minimum window size check
-	# WINDOW_MIN_SIZE = (system.max_positions[0] - 1, system.max_positions[1] - 1) # for testing
+	WINDOW_MIN_SIZE = (system.max_positions[0] - 1, system.max_positions[1] - 1) # for testing
 	# For launch
-	WINDOW_MIN_SIZE = (50, 150)
+	#
+	#WINDOW_MIN_SIZE = (50, 150)
 
 	RESIZE_TEXT = "Window too small. Please resize to at least 50x150"
 	if system.max_positions[0] < WINDOW_MIN_SIZE[0] or system.max_positions[1] < WINDOW_MIN_SIZE[1]:
@@ -51,7 +53,6 @@ def main(window: curses.window, audio: SoundManager):
 
 		player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
 		waves_encountered = 0
-		enemies_spawned = 0
 		towers = []
 		clock = 0
 		speed_sleeps = [0.01, 0.005, 0.0025]
@@ -60,19 +61,18 @@ def main(window: curses.window, audio: SoundManager):
 		if game_state is not GameState.RESTART:
 			game_state = menu_choice(window, game_menu(window, game_state))
 
-		# Wave generation
-		WAVES_PER_LEVEL = 3
-		current_level = 1
-		wave_count = 0
-		difficulty = 1 # can be enumerated for Jon later
-		enemy_sprite = "╭༼☉ɷ⊙༽╭"
-		enemy_vel = 1
-		current_wave = None
-
 		# Map generation
 		map_design = Map(system, WINDOW_MIN_SIZE)
 		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[map_choice.MAP_CHOICE]
 
+
+		# Enemy_list initialization
+		enemy_list = Enemy_list()
+
+
+		# Wave generation
+		current_wave = Wave(map_design.enemy_spawn_pos, audio)
+	
 		while game_state is not game_state.GAME_OVER:
 			# Game Over check
 			if player.hp <= 0:
@@ -81,17 +81,24 @@ def main(window: curses.window, audio: SoundManager):
 
 			# Wave generation
 			# This can be wave controller in system?
-			if current_wave == None or len(current_wave.enemy_list) == 0:
-				enemies_spawned = 0
-				wave_count += 1
-				if wave_count > WAVES_PER_LEVEL:
-					wave_count = 1
-					current_level += 1
+			current_wave.level_up(enemy_list)
 
-				current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, map_design.enemy_spawn_pos, enemy_vel, audio)
-			# wave movement
-			if current_wave.wave_movement(clock, map_design, enemies_spawned):
-				player.take_damage()
+			# enemy movement
+			enemy_list.move_enemies(clock, current_wave, map_design, player)
+
+			# tower range checks
+			for tower in towers:
+				tower.prune_targets(enemy_list.enemies)
+				for baddie in enemy_list.enemies:
+					tower.range_check(baddie)
+				tower.fire(clock)
+
+			# move projectiles and apply hits, once per enemy per frame
+			for baddie in enemy_list.enemies:
+				baddie.update_projectiles(clock)
+
+			# enemy hp check
+			enemy_list.check_hp(player, towers)
 
 			#character
 			try:
@@ -124,7 +131,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			
 			#refresh screen and render objects
-			enemies_spawned = Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, wave_count, current_level, clock, current_wave.enemy_list, towers, current_wave.enemy_count, enemies_spawned, error.error_message)
+			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, clock, towers, current_wave, enemy_list, error.error_message)
 			#build menu
 			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 			#Time Control

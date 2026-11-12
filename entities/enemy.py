@@ -7,13 +7,17 @@ class Enemy(Entity):
 	"""Enemy Class"""
 	DEFAULT_HP = 100
 	DEFAULT_LEVEL = 1
-	def __init__(self, sprite, position, vel, audio):
-		self.__sprite = sprite
+	DEFAULT_DIRECTION = Direction.RIGHT.value
+	DEFAULT_SPRITE = "╭༼☉ɷ⊙༽╭"
+	DEFAULT_VELOCITY = 1
+
+	def __init__(self, position, audio):
+		self.__sprite = self.DEFAULT_SPRITE
 		self.__position = position
-		self.__vel = vel
+		self.__vel = self.DEFAULT_VELOCITY
 		self.__hp = self.DEFAULT_HP
 		self.__level = self.DEFAULT_LEVEL
-		self.__current_direction = Direction.RIGHT.value
+		self.__direction = self.DEFAULT_DIRECTION
 		self.__projectiles = []
 		self.__audio = audio
 
@@ -64,8 +68,8 @@ class Enemy(Entity):
 	def current_direction(self, direction):
 		self.__current_direction = direction
 
-	def move(self, direction):
-		self.__position = (self.__position[0] + direction[0] * self.__vel, self.__position[1] + direction[1] * self.__vel)
+	def move(self):
+		self.__position = (self.__position[0] + self.__direction[0], self.__position[1] + self.__direction[1])
 		
 	
 	def lose_hp(self, damage):
