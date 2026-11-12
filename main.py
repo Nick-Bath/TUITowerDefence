@@ -15,7 +15,6 @@ from utilities.render import Render
 from utilities.error import Error
 
 from maps.map_generator import Map
-import maps.map_generator as map_choice
 from system import GameController
 from enums.directions import Direction
 from enums.game_states import GameState
@@ -41,7 +40,8 @@ def main(window: curses.window, audio: SoundManager):
 
 	game_state = GameState.START
 
-	
+	# This will default until map can be chosen
+	MAP_CHOICE = 0
 
 	init_colours()
 	error = Error()
@@ -63,7 +63,8 @@ def main(window: curses.window, audio: SoundManager):
 
 		# Map generation
 		map_design = Map(system, WINDOW_MIN_SIZE)
-		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[map_choice.MAP_CHOICE]
+		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[MAP_CHOICE]
+		map_design.map_list[MAP_CHOICE](system, WINDOW_MIN_SIZE)
 
 
 		# Enemy_list initialization
@@ -131,7 +132,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			
 			#refresh screen and render objects
-			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, clock, towers, current_wave, enemy_list, error.error_message)
+			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, clock, towers, current_wave, enemy_list, error.error_message)
 			#build menu
 			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 			#Time Control

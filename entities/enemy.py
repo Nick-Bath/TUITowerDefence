@@ -20,6 +20,7 @@ class Enemy(Entity):
 		self.__direction = self.DEFAULT_DIRECTION
 		self.__projectiles = []
 		self.__audio = audio
+		self.__route_position = 0
 
 	@property
 	def sprite(self):
@@ -68,8 +69,9 @@ class Enemy(Entity):
 	def current_direction(self, direction):
 		self.__current_direction = direction
 
-	def move(self):
-		self.__position = (self.__position[0] + self.__direction[0], self.__position[1] + self.__direction[1])
+	def move(self, enemy_route):
+		self.__route_position += 1
+		self.__position = enemy_route[self.__route_position]
 		
 	
 	def lose_hp(self, damage):
