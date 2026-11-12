@@ -2,6 +2,8 @@ from entities.entity import Entity
 from enums.directions import Direction
 from entities.projectile import Projectile
 from utilities.distance import distance
+import curses
+from utilities.colours import RED
 
 class Enemy(Entity):
 	"""Enemy Class"""
@@ -10,53 +12,57 @@ class Enemy(Entity):
 	DEFAULT_DIRECTION = Direction.RIGHT.value
 	DEFAULT_SPRITE = "╭༼☉ɷ⊙༽╭"
 	DEFAULT_VELOCITY = 1
+	DEFAULT_COLOR = RED
 
 	def __init__(self, position, audio):
-		self.__sprite = self.DEFAULT_SPRITE
-		self.__position = position
-		self.__vel = self.DEFAULT_VELOCITY
-		self.__hp = self.DEFAULT_HP
-		self.__level = self.DEFAULT_LEVEL
-		self.__direction = self.DEFAULT_DIRECTION
-		self.__projectiles = []
-		self.__audio = audio
+		super().__init__()
+		self._sprite = self.DEFAULT_SPRITE
+		self.color = curses.color_pair(self.DEFAULT_COLOR)
+		self._position = position
+		self._vel = self.DEFAULT_VELOCITY
+		self._hp = self.DEFAULT_HP
+		self._level = self.DEFAULT_LEVEL
+		self._direction = self.DEFAULT_DIRECTION
+		self._projectiles = []
+		self._audio = audio
+		self.released = False
 
 	@property
 	def sprite(self):
-		return self.__sprite
+		return self._sprite
 
 	@property
 	def vel(self):
-		return self.__vel
+		return self._vel
 
 	@property
 	def hp(self):
-		return self.__hp
+		return self._hp
 
 	@property
 	def position(self):
-		return self.__position
+		return self._position
 
 	@property
 	def level(self):
-		return self.__level
+		return self._level
 
 	@property
-	def current_direction(self):
-		return self.__current_direction
+	def direction(self):
+		return self._direction
 
 	@property
 	def projectiles(self):
-		return self.__projectiles
+		return self._projectiles
 
 	def add_projectile(self, position, damage):
-		self.__projectiles.append(Projectile(position, self, damage))
+		self._projectiles.append(Projectile(position, self, damage))
 
 	def update_projectiles(self, clock):
 		to_remove = []
 		for projectile in self.projectiles:
 			if distance(projectile.position, self.position) == 0:
-				self.__audio.play("scissors")
+				self._audio.play("scissors")
 				self.lose_hp(projectile.damage)
 				to_remove.append(projectile)
 			elif clock % projectile.speed == 0:
@@ -64,15 +70,14 @@ class Enemy(Entity):
 		for projectile in to_remove:
 			self.projectiles.remove(projectile)
 
-	@current_direction.setter
+	@direction.setter
 	def current_direction(self, direction):
-		self.__current_direction = direction
+		self._direction = direction
 
 	def move(self):
-		self.__position = (self.__position[0] + self.__direction[0], self.__position[1] + self.__direction[1])
+		self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
 		
 	
 	def lose_hp(self, damage):
-		self.__hp -= damage
-		#self.__audio.play("scissors")
+		self._hp -= damage
 		

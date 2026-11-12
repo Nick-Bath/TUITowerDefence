@@ -81,7 +81,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			# Wave generation
 			# This can be wave controller in system?
-			current_wave.level_up(enemy_list)
+			current_wave.new_wave(enemy_list)
 
 			# enemy movement
 			enemy_list.move_enemies(clock, current_wave, map_design, player)

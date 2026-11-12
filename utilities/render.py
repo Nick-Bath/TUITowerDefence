@@ -23,17 +23,16 @@ class Render:
 
 
 		if clock % current_wave.spawn_rate == 0 and clock != 0 and current_wave.enemies_spawned < enemy_list.length:
-			current_wave.enemies_spawned += 1
+			for baddie in enemy_list.enemies:
+				if not baddie.released:
+					baddie.released = True
+					break
 		#rendering baddies
 		try:
-			i = 0
 			for baddie in enemy_list.enemies:
-				if i < current_wave.enemies_spawned:
-					system.window.addstr(baddie.position[0], baddie.position[1], baddie.sprite, curses.color_pair(RED))
-					system.window.addstr(baddie.position[0] + 1, baddie.position[1], str(baddie.hp), curses.color_pair(RED))
-				else:
-					break
-				i += 1
+				if baddie.released:
+					system.window.addstr(baddie.position[0], baddie.position[1], baddie.sprite, baddie.color)
+					system.window.addstr(baddie.position[0] + 1, baddie.position[1], str(baddie.hp), baddie.color)
 		except:
 			pass
 		#rendering towers
