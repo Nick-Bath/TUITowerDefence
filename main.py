@@ -63,7 +63,9 @@ def main(window: curses.window, audio: SoundManager):
 
 		# Map generation
 		map_design = Map(system, WINDOW_MIN_SIZE)
+		# sets enemy spawn position
 		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[MAP_CHOICE]
+		# fills lists with coordinates to render
 		map_design.map_list[MAP_CHOICE](system, WINDOW_MIN_SIZE)
 
 
