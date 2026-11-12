@@ -1,12 +1,11 @@
 import curses
 from entities.player import Player
-from maps.map_generator import Map
 from utilities.colours import GREEN, RED
 
 
 class Render:
 	@staticmethod
-	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, clock, towers, current_wave, enemy_list, error_message=""):
+	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, clock, towers, current_wave, enemy_list, error_message=""):
 		system.window.erase()
 		CENTER_X = system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2
 		CENTER_Y = system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2
@@ -45,16 +44,26 @@ class Render:
 			for projectile in baddie.projectiles:
 				system.window.addstr(projectile.position[0], projectile.position[1], projectile.sprite)
 
-		# Map
+		# Rendering Map
 		system.window.attron(curses.color_pair(GREEN) | curses.A_BOLD)
 
-		# This refreshes coords until maps become a pad
-		map_design.map_coords_hor = []
-		map_design.map_coords_ver = []
-		map_design.map_list[MAP_CHOICE](system, WINDOW_MIN_SIZE)
+		for coordinate in map_design.map_coords_hor:
+			system.window.addstr(coordinate[0], coordinate[1], "_")
 
-		
+		# Rendering Core
+		i = 0
+		for line in map_design.core.sprite:
+			system.window.addstr(map_design.core.position[0] + i, map_design.core.position[1], line)
+			i += 1
+
 		system.window.attroff(curses.color_pair(GREEN) | curses.A_BOLD)
+
+		# Rendering Border
+		for coordinate in map_design.border_coords_hor:
+			system.window.addstr(coordinate[0], coordinate[1], "_")
+		for coordinate in map_design.border_coords_ver:
+			system.window.addstr(coordinate[0], coordinate[1], "|")
+
 
 		# player
 		system.window.addstr(player.position[0], player.position[1], player.sprite)
