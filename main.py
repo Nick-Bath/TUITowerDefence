@@ -121,7 +121,7 @@ def main(window: curses.window, audio: SoundManager):
 			#build given build menu is open
 			elif key == "b" and build_menu_active == True:
 				build_menu_active = False
-				if player.money - selected_tower.DEFAULT_COST >= 0:
+				if selected_tower and player.money - selected_tower.DEFAULT_COST >= 0:
 					towers.append(selected_tower(player.position))
 					player.spend_money(selected_tower.DEFAULT_COST)
 				else:
