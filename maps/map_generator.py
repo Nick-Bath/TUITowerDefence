@@ -10,9 +10,17 @@ class Map:
 
 
         def __init__ (self, system, WINDOW_MIN_SIZE):
+            self.maze_top = (system.max_positions[0] - WINDOW_MIN_SIZE[0]) // 2
+            self.maze_left = (system.max_positions[1] - WINDOW_MIN_SIZE[1]) // 2
+            self.maze_middle_y = self.maze_top + WINDOW_MIN_SIZE[0] // 2
+            self.maze_middle_x = self.maze_left + WINDOW_MIN_SIZE[1] // 2
+
+            
+
+
             # These two defaults needs WINDOW_MIN_SIZE, so they have to be defined here instead of as class variables
-            DEFAULT_CORE_POS = (system.max_positions[0] // 2 - 2, system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2) - 8)
-            DEFAULT_ENEMY_SPAWN_POS = (system.max_positions[0]//2 - 1, system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2))
+            DEFAULT_CORE_POS = (self.maze_middle_y - 1, self.maze_middle_x + 67)
+            DEFAULT_ENEMY_SPAWN_POS = (self.maze_middle_y, self.maze_middle_x - 75)
 
             self.map_list = [self.map_one] #fill list with levels
             self.core_spawn_locations = [DEFAULT_CORE_POS]
@@ -26,22 +34,29 @@ class Map:
             self.enemy_route = []
 
         def map_one(self, system, WINDOW_MIN_SIZE):
-            # Maze coordinates
-            for y in range(int(system.max_positions[1]//2 - (int(WINDOW_MIN_SIZE[1]) // 2)), int(system.max_positions[1]//2 + (int(WINDOW_MIN_SIZE[1]) // 2))):
-                self.map_coords_hor.append((int(WINDOW_MIN_SIZE[0]/2) - 3, y))
-                self.enemy_route.append((int(WINDOW_MIN_SIZE[0]/2), y))
-                self.map_coords_hor.append((int(WINDOW_MIN_SIZE[0]/2) + 3, y))
+            top = self.maze_top
+            left = self.maze_left
+            bottom = self.maze_top + WINDOW_MIN_SIZE[0] - 1
+            right = self.maze_left + WINDOW_MIN_SIZE[1] - 1
 
-            # Border coordinates            
-            for i in range(int(system.max_positions[1]//2 - (int(WINDOW_MIN_SIZE[1]) // 2)), int(system.max_positions[1]//2 + (int(WINDOW_MIN_SIZE[1]) // 2))):
-                self.border_coords_hor.append((int(system.max_positions[0]//2 - (int(WINDOW_MIN_SIZE[0]) // 2)), i))
-                self.border_coords_hor.append((int(system.max_positions[0]//2 + (int(WINDOW_MIN_SIZE[0]) // 2) - 1), i))
-            for i in range(int(system.max_positions[0]//2 - (int(WINDOW_MIN_SIZE[0]) // 2) + 1), int(system.max_positions[0]//2 - 3)):
-                self.border_coords_ver.append((i, int(system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2) - 1)))
-                self.border_coords_ver.append((i, int(system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2))))
-            for i in range(int(system.max_positions[0]//2 + 3), int(system.max_positions[0]//2 + (int(WINDOW_MIN_SIZE[0]) // 2))):
-                self.border_coords_ver.append((i, int(system.max_positions[1]//2 - (WINDOW_MIN_SIZE[1]//2))))
-                self.border_coords_ver.append((i, int(system.max_positions[1]//2 + (WINDOW_MIN_SIZE[1]//2))))
+            # Maze coordinates
+            for x in range(self.maze_left + 1, self.maze_left + WINDOW_MIN_SIZE[1] - 1):
+                self.map_coords_hor.append((self.maze_middle_y - 3, x))
+                self.enemy_route.append((self.maze_middle_y, x))
+                self.map_coords_hor.append((self.maze_middle_y + 3, x))
+
+            # Top and bottom borders
+            for x in range(left, right + 1):
+                self.border_coords_hor.append((top, x))
+                self.border_coords_hor.append((bottom, x))
+
+            # Left and right borders
+            for y in range(top + 1, self.maze_middle_y - 2):
+                self.border_coords_ver.append((y, left))
+                self.border_coords_ver.append((y, right))
+            for y in range(self.maze_middle_y + 4, bottom + 1):
+                self.border_coords_ver.append((y, left))
+                self.border_coords_ver.append((y, right))
 
         # def map_two(self, system, WINDOW_MIN_SIZE):
         #     self.enemy_spawn_pos = (WINDOW_MIN_SIZE[0] // 5, 0)

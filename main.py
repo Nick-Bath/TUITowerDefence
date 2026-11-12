@@ -13,6 +13,7 @@ from entities.tower import Tower
 
 from utilities.render import Render
 from utilities.error import Error
+from utilities.check_window_size import check_window_size
 
 from maps.map_generator import Map
 from system import GameController
@@ -24,21 +25,31 @@ from utilities.colours import init_colours
 from entities.tower import Tower, Magic, Snipper, Rock, Power
 		
 def main(window: curses.window, audio: SoundManager):
-	#game init object wihin god object
-	system = GameController(window)
+
  
 	# Minimum window size check
-	WINDOW_MIN_SIZE = (system.max_positions[0] - 1, system.max_positions[1] - 1) # for testing
+	# WINDOW_MIN_SIZE = (system.max_positions[0] - 1, system.max_positions[1] - 1) # for testing
 	# For launch
 	#
-	#WINDOW_MIN_SIZE = (50, 150)
+	WINDOW_MIN_SIZE = (50, 150)
 
-	RESIZE_TEXT = "Window too small. Please resize to at least 50x150"
-	if system.max_positions[0] < WINDOW_MIN_SIZE[0] or system.max_positions[1] < WINDOW_MIN_SIZE[1]:
-		window.addstr(system.max_positions[0]//2, system.max_positions[1]//2 - (len(RESIZE_TEXT) // 2), RESIZE_TEXT)
-		window.refresh()
-		time.sleep(3)
-		return
+
+	while True:
+		window.timeout(100)
+
+		key = window.getch()
+
+		if key == curses.KEY_RESIZE:
+			curses.update_lines_cols()
+			window.clear()
+
+		if not check_window_size(window):
+			continue
+		else:
+			break
+		
+	#game init object wihin god object
+	system = GameController(window)	
 
 	game_state = GameState.START
 
