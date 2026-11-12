@@ -9,17 +9,22 @@ class Wave():
 	SPRITE_SIZE_HOR = 9
 	SPRITE_SIZE_VER = 1
 	DEFAULT_ENEMIES_SPAWNED = 0
+	DEFAULT_LEVEL = 1
+	DEFAULT_WAVE = 0
+	DEFAULT_DIFFICULTY = 1
+	DEFAULT_ENEMY_SPRITE = "╭༼☉ɷ⊙༽╭"
+	DEFAULT_ENEMY_VEL = 1
+
 	# sprite, spawn_pos, vel can eventually be enemy_type?
-	def __init__(self, level, wave, difficulty, sprite, spawn_pos, enemy_vel, audio):
-		self.level = level
-		self.wave = wave
-		self.difficulty = difficulty
-		self.sprite = sprite
+	def __init__(self, spawn_pos, audio):
+		self.level = self.DEFAULT_LEVEL
+		self.wave = self.DEFAULT_WAVE
+		self.difficulty = self.DEFAULT_DIFFICULTY
+		self.sprite = self.DEFAULT_ENEMY_SPRITE
 		self.spawn_pos = spawn_pos
-		self.enemy_vel = enemy_vel
+		self.enemy_vel = self.DEFAULT_ENEMY_VEL
 		self.audio = audio
-		self.enemy_list = Enemy_list()
-		self.enemy_spawned = self.DEFAULT_ENEMIES_SPAWNED
+		self.enemies_spawned = self.DEFAULT_ENEMIES_SPAWNED
 
 	def wave_calc(self):
 		return (self.level + self.wave) * self.difficulty

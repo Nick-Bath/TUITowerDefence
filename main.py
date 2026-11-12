@@ -61,19 +61,18 @@ def main(window: curses.window, audio: SoundManager):
 		if game_state is not GameState.RESTART:
 			game_state = menu_choice(window, game_menu(window, game_state))
 
-		# Wave generation
-		WAVES_PER_LEVEL = 3
-		current_level = 1
-		wave_count = 0
-		difficulty = 1 # can be enumerated for Jon later
-		enemy_sprite = "╭༼☉ɷ⊙༽╭"
-		enemy_vel = 1
-
 		# Map generation
 		map_design = Map(system, WINDOW_MIN_SIZE)
 		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[map_choice.MAP_CHOICE]
 
-		current_wave = Wave(current_level, wave_count, difficulty, enemy_sprite, map_design.enemy_spawn_pos, enemy_vel, audio)
+
+		# Enemy_list initialization
+		enemy_list = Enemy_list()
+
+
+		# Wave generation
+		WAVES_PER_LEVEL = 3
+		current_wave = Wave(map_design.enemy_spawn_pos, audio)
 	
 		while game_state is not game_state.GAME_OVER:
 			# Game Over check
@@ -83,16 +82,30 @@ def main(window: curses.window, audio: SoundManager):
 
 			# Wave generation
 			# This can be wave controller in system?
-			if current_wave == None or current_wave.enemy_list.length == 0:
+			if current_wave == None or enemy_list.length == 0:
 				current_wave.enemies_spawned = 0
 				current_wave.wave += 1
 				if current_wave.wave > WAVES_PER_LEVEL:
 					current_wave.wave = 1
 					current_wave.level += 1
-				current_wave.enemy_list.fill(current_wave)
-			# wave movement
-			if current_wave.wave_movement(clock, map_design):
-				player.take_damage()
+				enemy_list.fill(current_wave)
+
+			# enemy movement
+			enemy_list.move_enemies(clock, current_wave, map_design, player)
+
+			# tower range checks
+			for tower in towers:
+				tower.prune_targets(enemy_list.enemies)
+				for baddie in enemy_list.enemies:
+					tower.range_check(baddie)
+				tower.fire(clock)
+
+			# move projectiles and apply hits, once per enemy per frame
+			for baddie in enemy_list.enemies:
+				baddie.update_projectiles(clock)
+
+			# enemy hp check
+			enemy_list.check_hp(player, towers)
 
 			#character
 			try:
@@ -125,7 +138,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			
 			#refresh screen and render objects
-			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, clock, towers, current_wave, error.error_message)
+			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, clock, towers, current_wave, enemy_list, error.error_message)
 			#build menu
 			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 			#Time Control

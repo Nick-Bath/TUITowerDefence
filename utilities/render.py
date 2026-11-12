@@ -6,54 +6,39 @@ from utilities.colours import GREEN, RED
 
 class Render:
 	@staticmethod
-	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, clock, towers, current_wave, error_message=""):
+	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, clock, towers, current_wave, enemy_list, error_message=""):
 		system.window.erase()
 		
 		#rendering displayed information
 		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, f"{clock}")
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Enemies = " + str(current_wave.enemy_list.length))
+		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Enemies = " + str(enemy_list.length))
+
 		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Player HP: " + str(player.hp))
 		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 50, "Towers: " + str(len(towers)))
 		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Money: " + str(player.money))
 		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 1, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Level: " +str(current_wave.level) + ", Wave: " +str(current_wave.wave))
 
 
-		if clock % 100 == 0 and clock != 0 and current_wave.enemies_spawned <= current_wave.enemy_list.length:
+		if clock % 100 == 0 and clock != 0 and current_wave.enemies_spawned < enemy_list.length:
 			current_wave.enemies_spawned += 1
-		i = 0
 		#rendering baddies
 		try:
-			for baddie in current_wave.enemy_list.enemies:
+			i = 0
+			for baddie in enemy_list.enemies:
 				if i < current_wave.enemies_spawned:
 					system.window.addstr(baddie.position[0], baddie.position[1], baddie.sprite, curses.color_pair(RED))
 					system.window.addstr(baddie.position[0] + 1, baddie.position[1], str(baddie.hp), curses.color_pair(RED))
+				else:
+					break
 				i += 1
 		except:
 			pass
 		#rendering towers
 		for tower in towers: 
 			system.window.addstr(tower.position[0], tower.position[1], tower.sprite)
-			tower.prune_targets(current_wave.enemy_list.enemies)
-			for baddie in current_wave.enemy_list.enemies:
-				tower.range_check(baddie)
-			tower.fire(clock)
-
-		# move projectiles and apply hits, once per enemy per frame
-		for baddie in current_wave.enemy_list.enemies:
-			baddie.update_projectiles(clock)
-
-		# remove dead enemies (iterate over a copy so the list can change safely)
-		for baddie in list(current_wave.enemy_list.enemies):
-			if baddie.hp <= 0:
-				player.earn_money(baddie.level)
-				current_wave.enemy_list.enemies.remove(baddie)
-				current_wave.enemy_list.length -= 1
-				current_wave.enemies_spawned -= 1
-				for tower in towers:
-					tower.remove_target(baddie)
 
 		# render projectiles for every enemy (this was only drawing the last enemy's before)
-		for baddie in current_wave.enemy_list.enemies:
+		for baddie in enemy_list.enemies:
 			for projectile in baddie.projectiles:
 				system.window.addstr(projectile.position[0], projectile.position[1], projectile.sprite)
 
