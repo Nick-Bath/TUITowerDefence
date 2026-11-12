@@ -1,6 +1,8 @@
 from entities.enemy import Enemy
 from utilities.distance import distance
 
+CLOCK_RATE = 10
+
 class Enemy_list():
 
 	def __init__(self):
@@ -10,7 +12,7 @@ class Enemy_list():
 	def fill(self, wave):
 		length = wave.wave_calc()
 		for _ in range(0, length): # check for off by 1 error
-			self.enemies.append(Enemy(wave.sprite, wave.spawn_pos, wave.enemy_vel, wave.audio))
+			self.enemies.append(Enemy(wave.spawn_pos, wave.audio))
 		self.length = length
 		return self.enemies
 
@@ -18,7 +20,7 @@ class Enemy_list():
 	def move_enemies(self, clock, current_wave, map, player):
 		i = 0
 		for baddie in self.enemies:
-			if clock % 15 == 0 and i < current_wave.enemies_spawned:
+			if clock % (CLOCK_RATE/baddie.vel) == 0 and i < current_wave.enemies_spawned:
 				baddie.move()
 				if distance(baddie.position, map.core.position) < map.core.hitbox:
 					self.remove_enemy(baddie)

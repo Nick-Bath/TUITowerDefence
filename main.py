@@ -71,7 +71,6 @@ def main(window: curses.window, audio: SoundManager):
 
 
 		# Wave generation
-		WAVES_PER_LEVEL = 3
 		current_wave = Wave(map_design.enemy_spawn_pos, audio)
 	
 		while game_state is not game_state.GAME_OVER:
@@ -82,13 +81,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			# Wave generation
 			# This can be wave controller in system?
-			if current_wave == None or enemy_list.length == 0:
-				current_wave.enemies_spawned = 0
-				current_wave.wave += 1
-				if current_wave.wave > WAVES_PER_LEVEL:
-					current_wave.wave = 1
-					current_wave.level += 1
-				enemy_list.fill(current_wave)
+			current_wave.level_up(enemy_list)
 
 			# enemy movement
 			enemy_list.move_enemies(clock, current_wave, map_design, player)

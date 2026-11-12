@@ -8,18 +8,21 @@ class Render:
 	@staticmethod
 	def render_objects(system, WINDOW_MIN_SIZE, player, map_design, MAP_CHOICE, clock, towers, current_wave, enemy_list, error_message=""):
 		system.window.erase()
+		CENTER_X = system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2
+		CENTER_Y = system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2
+
 		
 		#rendering displayed information
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, f"{clock}")
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Enemies = " + str(enemy_list.length))
+		system.window.addstr(CENTER_Y + 3, CENTER_X + 2, f"{clock}")
+		system.window.addstr(CENTER_Y + 2, CENTER_X + 2, "Enemies = " + str(enemy_list.length))
 
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Player HP: " + str(player.hp))
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 2, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 50, "Towers: " + str(len(towers)))
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 3, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + WINDOW_MIN_SIZE[1] - 20, "Money: " + str(player.money))
-		system.window.addstr(system.max_positions[0]//2 - WINDOW_MIN_SIZE[0]//2 + 1, system.max_positions[1]//2 - WINDOW_MIN_SIZE[1]//2 + 2, "Level: " +str(current_wave.level) + ", Wave: " +str(current_wave.wave))
+		system.window.addstr(CENTER_Y + 2, CENTER_X + WINDOW_MIN_SIZE[1] - 20, "Player HP: " + str(player.hp))
+		system.window.addstr(CENTER_Y + 2, CENTER_X + WINDOW_MIN_SIZE[1] - 50, "Towers: " + str(len(towers)))
+		system.window.addstr(CENTER_Y + 3, CENTER_X + WINDOW_MIN_SIZE[1] - 20, "Money: " + str(player.money))
+		system.window.addstr(CENTER_Y + 1, CENTER_X + 2, "Level: " +str(current_wave.level) + ", Wave: " +str(current_wave.wave))
 
 
-		if clock % 100 == 0 and clock != 0 and current_wave.enemies_spawned < enemy_list.length:
+		if clock % current_wave.spawn_rate == 0 and clock != 0 and current_wave.enemies_spawned < enemy_list.length:
 			current_wave.enemies_spawned += 1
 		#rendering baddies
 		try:
