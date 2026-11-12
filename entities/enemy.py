@@ -26,6 +26,7 @@ class Enemy(Entity):
 		self._projectiles = []
 		self._audio = audio
 		self.released = False
+    self._route_position = 0
 
 	@property
 	def sprite(self):
@@ -55,14 +56,14 @@ class Enemy(Entity):
 	def projectiles(self):
 		return self._projectiles
 
-	def add_projectile(self, position, damage):
-		self._projectiles.append(Projectile(position, self, damage))
+	def add_projectile(self, position, damage, projectile_sprite, projectile_sound):
+		self._projectiles.append(Projectile(position, self, damage, projectile_sprite, projectile_sound))
 
 	def update_projectiles(self, clock):
 		to_remove = []
 		for projectile in self.projectiles:
 			if distance(projectile.position, self.position) == 0:
-				self._audio.play("scissors")
+				self._audio.play(projectile.sound)
 				self.lose_hp(projectile.damage)
 				to_remove.append(projectile)
 			elif clock % projectile.speed == 0:
@@ -74,8 +75,9 @@ class Enemy(Entity):
 	def current_direction(self, direction):
 		self._direction = direction
 
-	def move(self):
-		self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
+	def move(self, enemy_route):
+		self._route_position += 1
+		self._position = enemy_route[self._route_position]
 		
 	
 	def lose_hp(self, damage):

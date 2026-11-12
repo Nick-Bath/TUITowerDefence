@@ -15,12 +15,13 @@ from utilities.render import Render
 from utilities.error import Error
 
 from maps.map_generator import Map
-import maps.map_generator as map_choice
 from system import GameController
 from enums.directions import Direction
 from enums.game_states import GameState
 from menu_options import menu_choice
 from utilities.colours import init_colours
+
+from entities.tower import Tower, Magic, Snipper, Rock, Power
 		
 def main(window: curses.window, audio: SoundManager):
 	#game init object wihin god object
@@ -41,7 +42,8 @@ def main(window: curses.window, audio: SoundManager):
 
 	game_state = GameState.START
 
-	
+	# This will default until map can be chosen
+	MAP_CHOICE = 0
 
 	init_colours()
 	error = Error()
@@ -54,6 +56,7 @@ def main(window: curses.window, audio: SoundManager):
 		player = Player((system.max_positions[0]//2, system.max_positions[1]//2))
 		waves_encountered = 0
 		towers = []
+		
 		clock = 0
 		speed_sleeps = [0.01, 0.005, 0.0025]
 		speed_lvl = 0
@@ -63,7 +66,10 @@ def main(window: curses.window, audio: SoundManager):
 
 		# Map generation
 		map_design = Map(system, WINDOW_MIN_SIZE)
-		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[map_choice.MAP_CHOICE]
+		# sets enemy spawn position
+		map_design.enemy_spawn_pos = map_design.enemy_spawn_pos_list[MAP_CHOICE]
+		# fills lists with coordinates to render
+		map_design.map_list[MAP_CHOICE](system, WINDOW_MIN_SIZE)
 
 
 		# Enemy_list initialization
@@ -115,10 +121,9 @@ def main(window: curses.window, audio: SoundManager):
 			#build given build menu is open
 			elif key == "b" and build_menu_active == True:
 				build_menu_active = False
-				selected_tower = None
-				if player.money - Tower.DEFAULT_COST >= 0:
-					towers.append(Tower(player.position))
-					player.spend_money(Tower.DEFAULT_COST)
+				if player.money - selected_tower.DEFAULT_COST >= 0:
+					towers.append(selected_tower(player.position))
+					player.spend_money(selected_tower.DEFAULT_COST)
 				else:
 					error.error_message = "Not Enough Money"
 					error.clock_timestamp = clock
@@ -131,7 +136,7 @@ def main(window: curses.window, audio: SoundManager):
 
 			
 			#refresh screen and render objects
-			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, map_choice.MAP_CHOICE, clock, towers, current_wave, enemy_list, error.error_message)
+			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, clock, towers, current_wave, enemy_list, error.error_message)
 			#build menu
 			selected_tower = Render.buildMenu(system, player, key, build_menu_active, selected_tower)
 			#Time Control
@@ -148,6 +153,9 @@ def main(window: curses.window, audio: SoundManager):
 if __name__ == "__main__":
 	audio = SoundManager()
 	audio.load("scissors", "scissors.wav", volume=0.5)
+	audio.load("rock", "rock.mp3", volume=0.05)
+	audio.load("power", "power.mp3", volume=0.40)
+	audio.load("magic", "magic.mp3", volume=0.75)
 	try:
 		curses.wrapper(main, audio)
 	finally:

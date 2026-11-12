@@ -35,7 +35,7 @@ class Enemy_list():
 	def move_enemies(self, clock, current_wave, map, player):
 		for baddie in self.enemies:
 			if baddie.released and clock % (CLOCK_RATE/baddie.vel) == 0:
-				baddie.move()
+				baddie.move(map.enemy_route)
 				if distance(baddie.position, map.core.position) < map.core.hitbox:
 					self.remove_enemy(baddie)
 					player.take_damage()

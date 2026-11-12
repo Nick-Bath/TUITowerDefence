@@ -2,9 +2,10 @@ from entities.entity import Entity
 
 class Core(Entity):
     DEFAULT_SPRITE = [
-            " /\\",
-            "<  >",
-            " \\/"
+        " /\\ ",
+        "|\\/|",
+        "|/\\|",
+        " \\/ ",
     ]
     CORE_HITBOX = 6
     def __init__(self, position):
@@ -12,11 +13,11 @@ class Core(Entity):
         self.__position = position
         self.__hitbox = self.CORE_HITBOX
 
-    def display_sprite(self, system):
-        i = 0
-        for line in self.__sprite:
-            system.window.addstr(self.position[0] + i, self.position[1], line)
-            i += 1
+    # def display_sprite(self):
+    #     i = 0
+    #     for line in self.__sprite:
+    #         system.window.addstr(self.position[0] + i, self.position[1], line)
+    #         i += 1
 
 
     @property 
