@@ -1,136 +1,55 @@
-import math
-from entities.projectile import Projectile
-from utilities.distance import distance
+from abc import ABC, abstractmethod
 
-class Tower:
-	DEFAULT_SPRITE = "۩۩"
-	"""Tower Class"""
-	DEFAULT_DAMAGE = 10
-	DEFAULT_RANGE = 20
-	DEFAULT_COST = 10
-	DEFAULT_MAX_TARGETS = 1
-	DEFAULT_N_TARGETS = 0
-	DEFAULT_FIRE_RATE = 20
-	DEFAULT_PROJECTILE = "✄"
-	DEFAULT_SOUND = "Scissors"
-	def __init__(self, position):
-		self.__sprite = self.DEFAULT_SPRITE
-		self.__position = position
-		self.__damage = self.DEFAULT_DAMAGE
-		self.__range = self.DEFAULT_RANGE
-		self.__cost = self.DEFAULT_COST
-		self.__targets = []
-		self.__n_targets = self.DEFAULT_N_TARGETS
-		self.__max_targets = self.DEFAULT_MAX_TARGETS
-		self.__fire_rate = self.DEFAULT_FIRE_RATE
-		self.__projectile = self.DEFAULT_PROJECTILE
-		self.__sound = self.DEFAULT_SOUND
+class Tower(ABC):
+	"""Abstract Tower Class"""
+	@property
+	@abstractmethod
+	def sprite(self) -> str: ...
+		
 
 	@property
-	def sprite(self):
-		return self.__sprite
+	@abstractmethod
+	def position(self) -> tuple: ...
 
 	@property
-	def position(self):
-		return self.__position
+	@abstractmethod
+	def damage(self) -> int: ...
 
 	@property
-	def damage(self):
-		return self.__damage
+	@abstractmethod
+	def range(self) -> int: ...
 
 	@property
-	def range(self):
-		return self.__range
-	
-	@property
-	def cost(self):
-		return self.__cost
+	@abstractmethod
+	def cost(self) -> int: ...
 
 	@property
-	def targets(self):
-		return self.__targets
+	@abstractmethod
+	def targets(self) -> list: ...
 
 	@property
-	def n_targets(self):
-		return self.__n_targets
+	@abstractmethod
+	def n_targets(self) -> list: ...
 
 	@property
-	def max_targets(self):
-		return self.__max_targets
+	@abstractmethod
+	def max_targets(self) -> int: ...
 
 	@property
-	def fire_rate(self):
-		return self.__fire_rate
+	@abstractmethod
+	def fire_rate(self) ->  int: ...
 
-	def add_target(self, enemy):
-		if self.__n_targets < self.__max_targets:
-			self.__n_targets += 1
-			self.__targets.append(enemy)
+	@abstractmethod
+	def add_target(self, enemy): ...
 
+	@abstractmethod
+	def remove_target(self, enemy): ...
 
-	def remove_target(self, enemy):
-		if enemy in self.__targets:
-			self.__targets.remove(enemy)
-			self.__n_targets -= 1
+	@abstractmethod
+	def prune_targets(self, enemy_list): ...
 
-	def prune_targets(self, enemy_list):
-		# drop targets that were removed from the game by anything (death, reaching the core)
-		for enemy in list(self.__targets):
-			if enemy not in enemy_list:
-				self.remove_target(enemy)
-
-	def range_check(self, enemy):
-		if distance(enemy.position, self.__position) < self.__range:
-			if enemy not in self.__targets: 
-				self.add_target(enemy)
-		elif enemy in self.__targets:
-				self.remove_target(enemy)
-
-	def fire(self, clock):
-		if clock % self.__fire_rate == 0:
-			for enemy in self.__targets:
-				enemy.add_projectile(self.__position, self.__damage, self.__projectile, self.__sound)
-
-class Snipper(Tower):
-	DEFAULT_SPRITE = "۩"
-	DEFAULT_DAMAGE = 10
-	DEFAULT_RANGE = 20
-	DEFAULT_COST = 10
-	DEFAULT_MAX_TARGETS = 1
-	DEFAULT_N_TARGETS = 0
-	DEFAULT_FIRE_RATE = 20
-	DEFAULT_PROJECTILE = "✄"
-	DEFAULT_SOUND = "scissors"
-
-class Power(Tower):
-	DEFAULT_SPRITE = "✪"
-	DEFAULT_DAMAGE = 25
-	DEFAULT_FIRE_RATE = 20
-	DEFAULT_RANGE = 20
-	DEFAULT_COST = 15
-	DEFAULT_MAX_TARGETS = 1
-	DEFAULT_N_TARGETS = 0
-	DEFAULT_PROJECTILE = "✢"
-	DEFAULT_SOUND = "power"
-
-class Rock(Tower):
-	DEFAULT_SPRITE = "♖"
-	DEFAULT_DAMAGE = 30
-	DEFAULT_RANGE = 30
-	DEFAULT_COST = 20
-	DEFAULT_MAX_TARGETS = 1
-	DEFAULT_N_TARGETS = 0
-	DEFAULT_FIRE_RATE = 30
-	DEFAULT_PROJECTILE = "❁"
-	DEFAULT_SOUND = "rock"
-
-class Magic(Tower):
-	DEFAULT_SPRITE = "✷"
-	DEFAULT_DAMAGE = 10
-	DEFAULT_RANGE = 20
-	DEFAULT_COST = 30
-	DEFAULT_MAX_TARGETS = 2
-	DEFAULT_N_TARGETS = 0
-	DEFAULT_FIRE_RATE = 10
-	DEFAULT_PROJECTILE = "✧"
-	DEFAULT_SOUND = "magic"
+	@abstractmethod
+	def range_check(self, enemy): ...
+		
+	@abstractmethod
+	def fire(self, clock): ...

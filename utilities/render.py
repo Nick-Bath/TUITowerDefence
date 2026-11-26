@@ -1,7 +1,9 @@
 import curses
-from entities.player import Player
 from utilities.colours import GREEN, RED
-from entities.tower import Tower, Magic, Snipper, Rock, Power
+from entities.tower_subclasses.basetowers.magic import Magic
+from entities.tower_subclasses.basetowers.snipper import Snipper
+from entities.tower_subclasses.basetowers.rock import Rock
+from entities.tower_subclasses.basetowers.power import Power
 
 TOWER_TYPES = [Snipper, Power, Rock, Magic]
 

@@ -1,5 +1,3 @@
-from utilities.distance import distance
-
 class Projectile:
 	DEFAULT_VELOCITY = 2
 	def __init__(self, position, enemy, damage, projectile_sprite, projectile_sound):
