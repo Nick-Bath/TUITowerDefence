@@ -12,20 +12,22 @@ class Boi(Enemy):
 	DEFAULT_DIRECTION = Direction.RIGHT.value
 	DEFAULT_VELOCITY = 1
 	DEFAULT_COLOR = RED
+	DEFAULT_ROUTE_POSITION = 0
 
-	def __init__(self, position, audio):
+	def __init__(self, map, audio, released=False, route_position=DEFAULT_ROUTE_POSITION):
 		super().__init__()
 		self._sprite = self.DEFAULT_SPRITE
 		self.color = curses.color_pair(self.DEFAULT_COLOR)
-		self._position = position
+		self.route = map.enemy_route
+		self._route_position = route_position
+		self._position = self.route[self._route_position]
 		self._vel = self.DEFAULT_VELOCITY
 		self._hp = self.DEFAULT_HP
 		self._level = self.DEFAULT_LEVEL
 		self._direction = self.DEFAULT_DIRECTION
 		self._projectiles = []
 		self._audio = audio
-		self.released = False
-		self._route_position = 0
+		self.released = released
 
 	@property
 	def sprite(self):

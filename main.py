@@ -88,7 +88,7 @@ def main(window: curses.window, audio: SoundManager):
 
 
 		# Wave generation
-		current_wave = Wave(map_design.enemy_spawn_pos, audio)
+		current_wave = Wave(audio)
 	
 		while game_state is not game_state.GAME_OVER:
 			# Game Over check
@@ -98,10 +98,10 @@ def main(window: curses.window, audio: SoundManager):
 
 			# Wave generation
 			# This can be wave controller in system?
-			current_wave.new_wave(enemy_list)
+			current_wave.new_wave(enemy_list, map_design)
 
 			# enemy movement
-			enemy_list.move_enemies(clock, current_wave, map_design, player)
+			enemy_list.move_enemies(clock, map_design, player)
 
 			# tower range checks
 			for tower in towers:
@@ -115,7 +115,7 @@ def main(window: curses.window, audio: SoundManager):
 				baddie.update_projectiles(clock)
 
 			# enemy hp check
-			enemy_list.check_hp(player, towers)
+			enemy_list.check_hp(player, towers, map_design, audio)
 
 			#character
 			try:

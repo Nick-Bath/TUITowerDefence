@@ -16,11 +16,10 @@ class Wave():
 	DEFAULT_SPAWN_RATE = 100
 
 	# sprite, spawn_pos, vel can eventually be enemy_type?
-	def __init__(self, spawn_pos, audio):
+	def __init__(self, audio):
 		self.level = self.DEFAULT_LEVEL
 		self.wave = self.DEFAULT_WAVE
 		self.difficulty = self.DEFAULT_DIFFICULTY
-		self.spawn_pos = spawn_pos
 		self.audio = audio
 		self.enemies_spawned = self.DEFAULT_ENEMIES_SPAWNED
 		self.waves_per_level = self.DEFAULT_WAVES_PER_LEVEL
@@ -29,20 +28,24 @@ class Wave():
 	def wave_calc(self):
 		enemies_to_spawn = {
 			"basicbois": 0,
-			"thickbois": 0
+			"thickbois": 0,
+			"bossbois": 0
 		}
 		thickbois = self.level // 2
+		bossbois = self.level // 3
 		enemies_to_spawn["basicbois"] = (self.level + self.wave) * self.difficulty
 		if thickbois > 0:
 			enemies_to_spawn["thickbois"] = thickbois
+		if bossbois > 0:
+			enemies_to_spawn["bossbois"] = bossbois
 		return enemies_to_spawn
 
 
-	def new_wave(self, enemy_list):
+	def new_wave(self, enemy_list, map):
 		if enemy_list.length == 0:
 			self.enemies_spawned = 0
 			self.wave += 1
 			if self.wave > self.waves_per_level:
 				self.wave = 1
 				self.level += 1
-			enemy_list.fill(self)
+			enemy_list.fill(self, map)
