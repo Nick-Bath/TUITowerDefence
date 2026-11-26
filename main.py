@@ -2,28 +2,21 @@
 
 import curses
 import time
-import math
 from utilities.sound import SoundManager
 from game_menu import game_menu
 from entities.player import Player
-from entities.enemy import Enemy
 from functions.wave import Wave
 from functions.enemy_list import Enemy_list
-from entities.tower import Tower
-
 from utilities.render import Render
 from utilities.error import Error
 from utilities.check_window_size import check_window_size
-
 from maps.map_generator import Map
 from system import GameController
-from enums.directions import Direction
 from enums.game_states import GameState
 from menu_options import menu_choice
 from utilities.colours import init_colours
 
-from entities.tower import Tower, Magic, Snipper, Rock, Power
-		
+
 def main(window: curses.window, audio: SoundManager):
 
  
@@ -143,6 +136,7 @@ def main(window: curses.window, audio: SoundManager):
 				build_menu_active = True
 			elif key == "q":
 				speed_lvl = (speed_lvl + 1) % 3
+
 
 			#refresh screen and render objects
 			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, clock, towers, current_wave, enemy_list, error.error_message)
