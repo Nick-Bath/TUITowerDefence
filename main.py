@@ -144,8 +144,6 @@ def main(window: curses.window, audio: SoundManager):
 			elif key == "q":
 				speed_lvl = (speed_lvl + 1) % 3
 
-
-			
 			#refresh screen and render objects
 			Render.render_objects(system, WINDOW_MIN_SIZE, player, map_design, clock, towers, current_wave, enemy_list, error.error_message)
 			#build menu

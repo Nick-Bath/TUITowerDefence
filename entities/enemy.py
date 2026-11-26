@@ -1,85 +1,45 @@
-from entities.entity import Entity
-from enums.directions import Direction
-from entities.projectile import Projectile
-from utilities.distance import distance
-import curses
-from utilities.colours import RED
+"""Enemy abstract class"""
 
-class Enemy(Entity):
-	"""Enemy Class"""
-	DEFAULT_HP = 100
-	DEFAULT_LEVEL = 1
-	DEFAULT_DIRECTION = Direction.RIGHT.value
-	DEFAULT_SPRITE = "╭༼☉ɷ⊙༽╭"
-	DEFAULT_VELOCITY = 1
-	DEFAULT_COLOR = RED
+from abc import ABC, abstractmethod
 
-	def __init__(self, position, audio):
-		super().__init__()
-		self._sprite = self.DEFAULT_SPRITE
-		self.color = curses.color_pair(self.DEFAULT_COLOR)
-		self._position = position
-		self._vel = self.DEFAULT_VELOCITY
-		self._hp = self.DEFAULT_HP
-		self._level = self.DEFAULT_LEVEL
-		self._direction = self.DEFAULT_DIRECTION
-		self._projectiles = []
-		self._audio = audio
-		self.released = False
-		self._route_position = 0
+class Enemy(ABC):
+	"""Enemy abstract class"""
+	@property
+	@abstractmethod
+	def sprite(self) -> str: ...
 
 	@property
-	def sprite(self):
-		return self._sprite
+	@abstractmethod
+	def position(self) -> tuple: ...
 
 	@property
-	def vel(self):
-		return self._vel
+	@abstractmethod
+	def vel(self) -> int: ...
 
 	@property
-	def hp(self):
-		return self._hp
+	@abstractmethod
+	def hp(self) -> int: ...
 
 	@property
-	def position(self):
-		return self._position
+	@abstractmethod
+	def level(self) -> int: ...
 
 	@property
-	def level(self):
-		return self._level
+	@abstractmethod
+	def projectiles(self) -> list: ...
 
 	@property
-	def direction(self):
-		return self._direction
+	@abstractmethod
+	def direction(self) -> int: ...
 
-	@property
-	def projectiles(self):
-		return self._projectiles
+	@abstractmethod
+	def move(self, enemy_route): ...
 
-	def add_projectile(self, position, damage, projectile_sprite, projectile_sound):
-		self._projectiles.append(Projectile(position, self, damage, projectile_sprite, projectile_sound))
+	@abstractmethod
+	def lose_hp(self, damage): ...
 
-	def update_projectiles(self, clock):
-		to_remove = []
-		for projectile in self.projectiles:
-			if distance(projectile.position, self.position) == 0:
-				self._audio.play(projectile.sound)
-				self.lose_hp(projectile.damage)
-				to_remove.append(projectile)
-			elif clock % projectile.speed == 0:
-				projectile.move(self)
-		for projectile in to_remove:
-			self.projectiles.remove(projectile)
+	@abstractmethod
+	def update_projectiles(self, clock): ...
 
-	@direction.setter
-	def current_direction(self, direction):
-		self._direction = direction
-
-	def move(self, enemy_route):
-		self._route_position += 1
-		self._position = enemy_route[self._route_position]
-		
-	
-	def lose_hp(self, damage):
-		self._hp -= damage
-		
+	@abstractmethod
+	def add_projectile(self, position, damage, projectile_sprite, projectile_sound): ...
