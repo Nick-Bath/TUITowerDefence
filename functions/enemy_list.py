@@ -1,6 +1,7 @@
 from entities.enemy import Enemy
 from utilities.distance import distance
-from entities.enemy_subclasses.thickboi import ThickBoi
+from entities.enemy_subclasses.bois.thickboi import ThickBoi
+from entities.enemy_subclasses.bois.basicboi import BasicBoi
 
 CLOCK_RATE = 10
 
@@ -12,14 +13,14 @@ class Enemy_list():
 
 	def fill(self, wave):
 		enemies_to_spawn = wave.wave_calc()
-		normal = enemies_to_spawn["normal_enemies"]
+		basicbois = enemies_to_spawn["basicbois"]
 		thickbois = enemies_to_spawn["thickbois"]
 
 		if thickbois > 0:
-			thickboi_rate = max(1, normal // thickbois)
+			thickboi_rate = max(1, basicbois // thickbois)
 
-		for i in range(normal):
-			self.enemies.append(Enemy(wave.spawn_pos, wave.audio))
+		for i in range(basicbois):
+			self.enemies.append(BasicBoi(wave.spawn_pos, wave.audio))
 			self.length += 1
 			if thickbois > 1:
 				if (i + 1) % thickboi_rate == 0:
@@ -27,7 +28,7 @@ class Enemy_list():
 					thickbois -= 1
 					self.length += 1
 			elif thickbois == 1:
-				if i == normal - 1:
+				if i == basicbois - 1:
 					self.enemies.append(ThickBoi(wave.spawn_pos, wave.audio))
 					self.length += 1
 

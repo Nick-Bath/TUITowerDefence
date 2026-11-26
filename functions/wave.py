@@ -28,11 +28,11 @@ class Wave():
 
 	def wave_calc(self):
 		enemies_to_spawn = {
-			"normal_enemies": 0,
+			"basicbois": 0,
 			"thickbois": 0
 		}
 		thickbois = self.level // 2
-		enemies_to_spawn["normal_enemies"] = (self.level + self.wave) * self.difficulty
+		enemies_to_spawn["basicbois"] = (self.level + self.wave) * self.difficulty
 		if thickbois > 0:
 			enemies_to_spawn["thickbois"] = thickbois
 		return enemies_to_spawn

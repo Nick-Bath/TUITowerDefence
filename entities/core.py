@@ -1,6 +1,6 @@
-from entities.entity import Entity
 
-class Core(Entity):
+
+class Core():
     DEFAULT_SPRITE = [
         " /\\ ",
         "|\\/|",

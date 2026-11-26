@@ -1,8 +1,8 @@
-from entities.enemy import Enemy
+from entities.enemy_subclasses.boi import Boi
 from utilities.colours import BLUE
-import curses
 
-class ThickBoi(Enemy):
+
+class ThickBoi(Boi):
 	"""thickboi class, more hp, slower"""
 
 	DEFAULT_SPRITE = "╭༼ ◉෴◉ ༽ƪ╮"
